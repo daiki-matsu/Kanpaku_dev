@@ -1,6 +1,6 @@
 ---
 codd:
-  node_id: detailed_design:history-persistence-schema
+  node_id: design:history-persistence-schema
   type: design
   depends_on:
   - id: design:state-management-redis

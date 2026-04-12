@@ -4,6 +4,13 @@ codd:
   type: requirement
   status: approved
   confidence: 0.95
+  depended_by:
+  - id: test:acceptance-criteria
+    relation: derives_from
+    semantic: governance
+  - id: req:architecture
+    relation: derives_from
+    semantic: governance
 ---
 
 # **Kanpaku(関白システム)**

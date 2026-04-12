@@ -6,10 +6,10 @@ codd:
   - id: design:detailed-skill-evolution
     relation: depends_on
     semantic: technical
-  - id: detailed_design:task-lifecycle-flow
+  - id: design:task-lifecycle-flow
     relation: depends_on
     semantic: technical
-  - id: detailed_design:history-persistence-schema
+  - id: design:history-persistence-schema
     relation: depends_on
     semantic: technical
   depended_by: []

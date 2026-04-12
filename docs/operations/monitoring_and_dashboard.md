@@ -3,7 +3,7 @@ codd:
   node_id: ops:monitoring-guide
   type: operations
   depends_on:
-  - id: detailed_design:task-lifecycle-flow
+  - id: design:task-lifecycle-flow
     relation: depends_on
     semantic: technical
   depended_by: []

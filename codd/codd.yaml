@@ -40,7 +40,60 @@ verify:
   e2e_command: null
   e2e_deploy_command: null
   e2e_ci_command: null
-conventions: []
+conventions:
+  # Module conventions
+  - id: module:executor
+    description: File execution module for sandbox operations
+  - id: module:jiju
+    description: Orchestrator module for task decomposition and management
+  - id: module:kanpaku
+    description: Primary interface module for user interaction
+  - id: module:monitor
+    description: Monitoring module for timeout and heartbeat enforcement
+  - id: module:task_manager
+    description: Task lifecycle management module
+  - id: module:persistence
+    description: YAML persistence module for historical records
+  
+  # Infrastructure conventions
+  - id: infra:llm-stack
+    description: LLM inference stack configuration
+  - id: infra:deployment
+    description: Model deployment and resource allocation
+  
+  # Agent conventions
+  - id: agent:hierarchy
+    description: Agent hierarchy enforcement (Kanpaku-Jiju-Toneri-Onmyoji)
+  - id: agent:heartbeat
+    description: Agent heartbeat monitoring (30s intervals)
+  - id: agent:timeout-policy
+    description: Timeout policy enforcement (300s thinking, 120s doing)
+  
+  # Database conventions
+  - id: db:redis
+    description: Redis state management and distributed locking
+  - id: db:chroma
+    description: Vector database for skill storage and retrieval
+  
+  # Redis conventions
+  - id: redis:file-lock
+    description: Redis-based file locking mechanism
+  
+  # State conventions
+  - id: state:persistence
+    description: State persistence to YAML files for auditability
+  
+  # Skill conventions
+  - id: skill:retrieval-logic
+    description: Skill retrieval logic based on success rate and similarity
+  
+  # Operations conventions
+  - id: ops:failure-visibility
+    description: Failed task visibility on dashboard
+  
+  # Review conventions
+  - id: review:score-threshold
+    description: Review score threshold (>=80 for task completion)
 ai_commands:
   plan: python connect_llm/gemini_wrapper.py
   generate: python connect_llm/gemini_wrapper.py
@@ -65,7 +118,7 @@ wave_config:
     modules:
     - orchestrator
     - agent_jiju
-  - node_id: gov:adr-001-architecture
+  - node_id: req:architecture
     output: docs/governance/adr_architecture.md
     title: 'ADR: Agent Hierarchy and State Management'
     depends_on:
@@ -87,7 +140,7 @@ wave_config:
     - id: test:acceptance-criteria
       relation: constrained_by
       semantic: technical
-    - id: gov:adr-001-architecture
+    - id: req:architecture
       relation: derives_from
       semantic: technical
     conventions:
@@ -202,7 +255,7 @@ wave_config:
     - skill_manager
     - agent_onmyoji
     - vector_db
-  - node_id: detailed_design:task-lifecycle-flow
+  - node_id: design:task-lifecycle-flow
     output: docs/detailed_design/task_lifecycle_flow.md
     title: Detailed Task Lifecycle and State Transitions
     depends_on:
@@ -225,7 +278,7 @@ wave_config:
     - state
     - agents
     - monitor
-  - node_id: detailed_design:history-persistence-schema
+  - node_id: design:history-persistence-schema
     output: docs/detailed_design/history_persistence_schema.md
     title: YAML Persistence and Logging Schema
     depends_on:
@@ -247,10 +300,10 @@ wave_config:
     - id: design:detailed-skill-evolution
       relation: depends_on
       semantic: technical
-    - id: detailed_design:task-lifecycle-flow
+    - id: design:task-lifecycle-flow
       relation: depends_on
       semantic: technical
-    - id: detailed_design:history-persistence-schema
+    - id: design:history-persistence-schema
       relation: depends_on
       semantic: technical
     modules:
@@ -263,7 +316,7 @@ wave_config:
     output: docs/operations/monitoring_and_dashboard.md
     title: Dashboard and Monitoring Guide
     depends_on:
-    - id: detailed_design:task-lifecycle-flow
+    - id: design:task-lifecycle-flow
       relation: depends_on
       semantic: technical
     conventions:
@@ -279,7 +332,7 @@ wave_config:
     output: docs/infra/resource_allocation.md
     title: Model Deployment and Resource Config
     depends_on:
-    - id: gov:adr-001-architecture
+    - id: req:architecture
       relation: depends_on
       semantic: technical
     conventions:

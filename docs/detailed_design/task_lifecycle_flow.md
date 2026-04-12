@@ -1,6 +1,6 @@
 ---
 codd:
-  node_id: detailed_design:task-lifecycle-flow
+  node_id: design:task-lifecycle-flow
   type: design
   depends_on:
   - id: design:state-management-redis

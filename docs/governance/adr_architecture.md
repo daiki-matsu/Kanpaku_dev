@@ -1,6 +1,6 @@
 ---
 codd:
-  node_id: gov:adr-001-architecture
+  node_id: req:architecture
   type: governance
   depends_on:
   - id: req:kanpaku-requirements

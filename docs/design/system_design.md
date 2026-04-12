@@ -6,7 +6,7 @@ codd:
   - id: test:acceptance-criteria
     relation: constrained_by
     semantic: technical
-  - id: gov:adr-001-architecture
+  - id: req:architecture
     relation: derives_from
     semantic: technical
   depended_by:

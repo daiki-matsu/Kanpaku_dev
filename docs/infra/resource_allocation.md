@@ -3,7 +3,7 @@ codd:
   node_id: infra:resource-allocation
   type: document
   depends_on:
-  - id: gov:adr-001-architecture
+  - id: req:architecture
     relation: depends_on
     semantic: technical
   depended_by: []
@@ -19,7 +19,7 @@ codd:
 # Model Deployment and Resource Config
 
 ## 1. Overview
-The Kanpaku system deployment is optimized for high-autonomy execution within a resource-constrained environment, specifically targeting an NVIDIA RTX 2070 SUPER with 8GB of VRAM. This document details the allocation of computational resources, model quantization strategies, and the orchestration of inference engines to maintain system stability while adhering to the strict agent hierarchy defined in `gov:adr-001-architecture`. 
+The Kanpaku system deployment is optimized for high-autonomy execution within a resource-constrained environment, specifically targeting an NVIDIA RTX 2070 SUPER with 8GB of VRAM. This document details the allocation of computational resources, model quantization strategies, and the orchestration of inference engines to maintain system stability while adhering to the strict agent hierarchy defined in `req:architecture`. 
 
 The primary challenge is the execution of `gemma4-26B-A4B` (Kanpaku/Onmyoji) and various 8B-class models (Jiju/Toneri) within the 8GB VRAM ceiling. To resolve this, the system utilizes a hybrid inference approach combining Ollama for Gemma-based models and llama.cpp for Bonsai and DeepSeek models, prioritizing GGUF quantization and selective layer offloading to the Core i5-13600KF CPU and 64GB DDR4 RAM.
 
@@ -62,7 +62,7 @@ The system enforces the following operational rules to maintain the 8GB VRAM inv
 ### 2.5 Persistence and State Storage
 - **Redis (`localhost:6379`):** Stores task keys (`tasks:{task_id}`), agent heartbeats, and locks.
 - **ChromaDB (`localhost:8000`):** Vector database for Skill Evolution. Uses `SentenceTransformers` on the CPU to reserve GPU for LLM inference.
-- **File System:** All logs and task histories are stored in `/project/history/` and `/project/logs/` as YAML, as specified in `gov:adr-001-architecture`.
+- **File System:** All logs and task histories are stored in `/project/history/` and `/project/logs/` as YAML, as specified in `req:architecture`.
 
 ### 2.6 Compliance and Security
 - **Constraint Compliance (infra:deployment):** Parallel execution is managed by the Jiju agent acting as a traffic controller. By utilizing Q3_K_M quantization for the 26B models and offloading layers to the 64GB system RAM, the system ensures that the 8GB VRAM limit is never breached, even during complex "Analyze" (L4) or "Create" (L6) tasks.
