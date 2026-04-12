@@ -21,3 +21,6 @@ virtualenv>=20.0.0
 
 # Codd development
 codd-dev>=1.6.0
+
+# Gemini API
+google-genai>=0.3.0

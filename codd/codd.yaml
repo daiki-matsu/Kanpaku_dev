@@ -1,0 +1,291 @@
+version: 0.1.0
+project:
+  frameworks: []
+  name: Kanpaku
+  language: python
+ai_command: python connect_llm/gemini_wrapper.py
+coding_principles: null
+scan:
+  source_dirs:
+  - src/
+  test_dirs:
+  - tests/
+  doc_dirs:
+  - docs/
+  config_files: []
+  exclude:
+  - '**/node_modules/**'
+  - '**/__pycache__/**'
+  - '**/dist/**'
+graph:
+  store: jsonl
+  path: codd/scan
+bands:
+  green:
+    min_confidence: 0.9
+    min_evidence_count: 2
+  amber:
+    min_confidence: 0.5
+propagation:
+  max_depth: 10
+  stop_at_contract_boundary: true
+fix:
+  test_command: null
+  max_attempts: 3
+verify:
+  typecheck_command: null
+  test_command: null
+  report_output: docs/test/verify_report.md
+  e2e_setup_command: null
+  e2e_command: null
+  e2e_deploy_command: null
+  e2e_ci_command: null
+conventions: []
+ai_commands:
+  plan: python connect_llm/gemini_wrapper.py
+  generate: python connect_llm/gemini_wrapper.py
+  implement: python connect_llm/ollama_wrapper.py
+wave_config:
+  '1':
+  - node_id: test:acceptance-criteria
+    output: docs/test/acceptance_criteria.md
+    title: Kanpaku Acceptance Criteria
+    depends_on:
+    - id: req:kanpaku-requirements
+      relation: derives_from
+      semantic: governance
+    conventions:
+    - targets:
+      - agent:timeout-policy
+      reason: Thinking(300s) and Doing(120s) timeouts are release-blocking for agent
+        reliability.
+    - targets:
+      - review:score-threshold
+      reason: Review score >= 80 is required for TASK_COMPLETED status.
+    modules:
+    - orchestrator
+    - agent_jiju
+  - node_id: gov:adr-001-architecture
+    output: docs/governance/adr_architecture.md
+    title: 'ADR: Agent Hierarchy and State Management'
+    depends_on:
+    - id: req:kanpaku-requirements
+      relation: derives_from
+      semantic: governance
+    conventions:
+    - targets:
+      - agent:hierarchy
+      reason: The Kanpaku-Jiju-Toneri-Onmyoji hierarchy must be strictly enforced
+        for task delegation.
+    modules:
+    - orchestrator
+  '2':
+  - node_id: design:system-design
+    output: docs/design/system_design.md
+    title: System Architecture Design
+    depends_on:
+    - id: test:acceptance-criteria
+      relation: constrained_by
+      semantic: technical
+    - id: gov:adr-001-architecture
+      relation: derives_from
+      semantic: technical
+    conventions:
+    - targets:
+      - infra:llm-stack
+      reason: Must use Ollama/llama.cpp with specified models (gemma4, Bonsai-8B,
+        etc.) to meet performance constraints.
+    - targets:
+      - module:kanpaku
+      reason: Kanpaku is the sole interface for the user (Mikado).
+    - targets:
+      - module:jiju
+      reason: Jiju must manage task decomposition and agent assignment across multiple
+        processes.
+    modules:
+    - orchestrator
+    - storage
+    - agent_jiju
+  - node_id: design:security-sandbox
+    output: docs/design/security_sandbox.md
+    title: Security and Sandbox Design
+    depends_on:
+    - id: test:acceptance-criteria
+      relation: constrained_by
+      semantic: governance
+    conventions:
+    - targets:
+      - module:executor
+      reason: File operations MUST be restricted to the specific project folder (e.g.,
+        /project/).
+    modules:
+    - sandbox
+    - executor
+  '3':
+  - node_id: design:state-management-redis
+    output: docs/detailed_design/redis_schema_and_streams.md
+    title: Redis State and Lock Design
+    depends_on:
+    - id: design:system-design
+      relation: depends_on
+      semantic: technical
+    - id: design:security-sandbox
+      relation: depends_on
+      semantic: technical
+    conventions:
+    - targets:
+      - redis:file-lock
+      reason: File operations must use Redis locks with safe ownership verification
+        to prevent race conditions.
+    - targets:
+      - db:redis
+      reason: Distributed locking must use SET NX EX with Lua script verification
+        for safe release.
+    - targets:
+      - state:persistence
+      reason: Current state must be in Redis, while history must be persisted as YAML
+        to allow drift detection.
+    modules:
+    - storage
+    - state
+    - redis_client
+  - node_id: design:routing-bloom-taxonomy
+    output: docs/detailed_design/routing_bloom_taxonomy.md
+    title: Bloom's Taxonomy Routing Logic
+    depends_on:
+    - id: design:system-design
+      relation: depends_on
+      semantic: technical
+    conventions:
+    - targets:
+      - module:jiju
+      reason: 'Tasks must be routed based on Bloom levels: L1-L3 to Toneri, L4-L6
+        to Onmyoji.'
+    modules:
+    - routing
+    - agents
+  - node_id: design:detailed-agent-flow
+    output: docs/detailed_design/agent_state_transitions.md
+    title: Agent State Machine and Sequence Diagrams
+    depends_on:
+    - id: design:state-management-redis
+      relation: depends_on
+      semantic: technical
+    conventions:
+    - targets:
+      - agent:heartbeat
+      reason: Heartbeat interval (30s) must be implemented to provide real-time 'Thinking'
+        feedback.
+    modules:
+    - orchestrator
+    - agent_jiju
+    - agent_toneri
+    - agent_onmyoji
+  '4':
+  - node_id: design:detailed-skill-evolution
+    output: docs/detailed_design/skill_evolution_system.md
+    title: Skill Evolution and VectorDB Design
+    depends_on:
+    - id: design:detailed-agent-flow
+      relation: depends_on
+      semantic: technical
+    conventions:
+    - targets:
+      - skill:retrieval-logic
+      reason: Skill search must prioritize success_rate and similarity to prevent
+        regression.
+    - targets:
+      - db:chroma
+      reason: Skills are only registered if review score >= 80 and the task is successfully
+        completed.
+    modules:
+    - skill_manager
+    - agent_onmyoji
+    - vector_db
+  - node_id: detailed_design:task-lifecycle-flow
+    output: docs/detailed_design/task_lifecycle_flow.md
+    title: Detailed Task Lifecycle and State Transitions
+    depends_on:
+    - id: design:state-management-redis
+      relation: depends_on
+      semantic: technical
+    - id: design:routing-bloom-taxonomy
+      relation: depends_on
+      semantic: technical
+    conventions:
+    - targets:
+      - module:monitor
+      reason: Thinking timeout is 300s, Doing timeout is 120s; heartbeat interval
+        is 30s.
+    - targets:
+      - module:task_manager
+      reason: Tasks reaching retry count 10 must be marked as 'failed' and removed
+        from the active loop.
+    modules:
+    - state
+    - agents
+    - monitor
+  - node_id: detailed_design:history-persistence-schema
+    output: docs/detailed_design/history_persistence_schema.md
+    title: YAML Persistence and Logging Schema
+    depends_on:
+    - id: design:state-management-redis
+      relation: depends_on
+      semantic: technical
+    conventions:
+    - targets:
+      - module:persistence
+      reason: All state changes must be synchronized to YAML files under /history/
+        for auditability.
+    modules:
+    - persistence
+  '5':
+  - node_id: plan:implementation-plan
+    output: docs/plan/implementation_plan.md
+    title: Implementation Roadmap
+    depends_on:
+    - id: design:detailed-skill-evolution
+      relation: depends_on
+      semantic: technical
+    - id: detailed_design:task-lifecycle-flow
+      relation: depends_on
+      semantic: technical
+    - id: detailed_design:history-persistence-schema
+      relation: depends_on
+      semantic: technical
+    modules:
+    - orchestrator
+    - storage
+    - sandbox
+    - skill_manager
+    - state
+  - node_id: ops:monitoring-guide
+    output: docs/operations/monitoring_and_dashboard.md
+    title: Dashboard and Monitoring Guide
+    depends_on:
+    - id: detailed_design:task-lifecycle-flow
+      relation: depends_on
+      semantic: technical
+    conventions:
+    - targets:
+      - ops:failure-visibility
+      reason: Tasks reaching 10 retries must be visually highlighted (failed status)
+        on the dashboard.
+    modules:
+    - interface
+    - orchestrator
+    - monitor
+  - node_id: infra:resource-allocation
+    output: docs/infra/resource_allocation.md
+    title: Model Deployment and Resource Config
+    depends_on:
+    - id: gov:adr-001-architecture
+      relation: depends_on
+      semantic: technical
+    conventions:
+    - targets:
+      - infra:deployment
+      reason: Parallel execution of models must not exceed 8GB VRAM; use quantization
+        (llama.cpp) where necessary.
+    modules:
+    - llm_provider

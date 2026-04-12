@@ -109,6 +109,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+venv_linux
 
 # Spyder project settings
 .spyderproject
@@ -143,3 +144,9 @@ Thumbs.db
 *.log
 *.tmp
 temp/
+
+# 自分用
+.legacy/
+enter/
+setup_env/
+utility/
