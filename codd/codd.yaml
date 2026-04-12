@@ -96,7 +96,7 @@ conventions:
     description: Review score threshold (>=80 for task completion)
 ai_commands:
   plan: python connect_llm/gemini_wrapper.py
-  generate: python connect_llm/gemini_wrapper.py
+  generate: python connect_llm/ollama_wrapper.py
   implement: python connect_llm/ollama_wrapper.py
 wave_config:
   '1':
