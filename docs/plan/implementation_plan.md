@@ -119,171 +119,90 @@ The Kanpaku system is a high-concurrency agent orchestration framework that inte
 
 ## Sprint-Based Implementation Roadmap
 
-### Sprint 1: Core Infrastructure Setup (5 days)
+#### Sprint 1（5 days）: Core Infrastructure Setup
 
 **Objective**: Establish foundational architecture and basic state management
 
-#### Tasks
-- **Task 1.1**: Redis schema deployment
-  - Initialize `tasks:{task_id}` hash structure
-  - Create agent inbox lists (`inbox:toneri`, `inbox:onmyoji`)
-  - Implement distributed locking with `SET NX EX 300`
-  - *Dependencies: db:redis*
-
-- **Task 1.2**: Agent base class architecture
-  - Create base class for all agent types with consistent logging methods
-  - Define abstract methods for task lifecycle management
-  - Implement heartbeat mechanism (30s intervals)
-  - *Dependencies: agent:heartbeat, module:executor*
-
-- **Task 1.3**: Directory structure and basic utilities
-  - Define `/history/tasks/` directory structure
-  - Create utility functions for structured `LogEntry` formatting
-  - Implement basic YAML serialization framework
-  - *Dependencies: module:persistence*
+| タスクID | タスク名 | モジュールヒント | 成果物 |
+|----------|----------|------------------|--------|
+| 1-1 | Redis schema deployment | module:executor | Initialize `tasks:{task_id}` hash structure, Create agent inbox lists, Implement distributed locking |
+| 1-2 | Agent base class architecture | module:executor | Create base class for all agents, Define abstract methods, Implement heartbeat mechanism |
+| 1-3 | Directory structure and basic utilities | module:persistence | Define `/history/tasks/` structure, Create utility functions, Implement YAML serialization |
 
 #### Acceptance Criteria
 - Redis connection and basic operations functional
 - Agent base class instantiated with heartbeat monitoring
 - Directory structure created and basic file operations working
 
-### Sprint 2: State Machine and Task Routing (7 days)
+#### Sprint 2（7 days）: State Machine and Task Routing
 
 **Objective**: Implement core task execution flow and agent routing logic
 
-#### Tasks
-- **Task 2.1**: Bloom taxonomy routing implementation
-  - Configure Jiju to route L1-L3 tasks to Toneri
-  - Configure Jiju to route L4-L6 tasks to Onmyoji
-  - Implement task complexity assessment logic
-  - *Dependencies: agent:hierarchy, module:jiju*
-
-- **Task 2.2**: Temporal monitoring service
-  - Implement `module:monitor` for timeout enforcement
-  - Configure automatic task resets:
-    - "Thinking" timeout: >300s
-    - "Doing" timeout: >120s
-  - Setup timeout policy enforcement
-  - *Dependencies: agent:timeout-policy, module:monitor*
-
-- **Task 2.3**: Retry and terminal logic
-  - Implement retry counter in `module:task_manager`
-  - Enforce 10-attempt ceiling for terminal state
-  - Configure exponential backoff: `delay = base_delay * (2^retry_count)`
-  - Set maximum delay ceiling at 300s
-  - *Dependencies: module:task_manager*
+| タスクID | タスク名 | モジュールヒント | 成果物 |
+|----------|----------|------------------|--------|
+| 2-1 | Bloom taxonomy routing implementation | module:jiju | Configure Jiju routing for L1-L3/L4-L6 tasks, Implement task complexity assessment |
+| 2-2 | Temporal monitoring service | module:monitor | Implement timeout enforcement, Configure automatic resets, Setup timeout policy |
+| 2-3 | Retry and terminal logic | module:task_manager | Implement retry counter, Enforce 10-attempt ceiling, Configure exponential backoff |
 
 #### Acceptance Criteria
 - Tasks correctly routed based on complexity
 - Timeout monitoring and automatic resets functional
 - Retry logic with exponential backoff operational
 
-### Sprint 3: Persistence Layer and Data Integrity (8 days)
+#### Sprint 3（8 days）: Persistence Layer and Data Integrity
 
 **Objective**: Ensure all agent actions are auditable and recoverable
 
-#### Tasks
-- **Task 3.1**: YAML serialization engine
-  - Complete `module:persistence` utility development
-  - Generate `/history/tasks/T{task_id}.yaml` files with proper schema
-  - Implement structured log formatting with sanitization
-  - *Dependencies: state:persistence, module:persistence*
-
-- **Task 3.2**: Atomic history locking
-  - Implement `lock:history:{task_id}` mechanism
-  - Prevent race conditions during YAML writes
-  - Ensure atomic file operations with proper error handling
-  - *Dependencies: redis:file-lock*
-
-- **Task 3.3**: Integrity verification system
-  - Build Jiju drift detection hook
-  - Compare Redis `updated_at` with YAML `completed_at`
-  - Enforce 1000ms tolerance threshold
-  - Halt pipeline on synchronization failure
-  - *Dependencies: module:jiju, db:redis*
+| タスクID | タスク名 | モジュールヒント | 成果物 |
+|----------|----------|------------------|--------|
+| 3-1 | YAML serialization engine | module:persistence | Complete utility development, Generate YAML files with schema, Implement structured log formatting |
+| 3-2 | Atomic history locking | module:persistence | Implement locking mechanism, Prevent race conditions, Ensure atomic file operations |
+| 3-3 | Integrity verification system | module:jiju | Build drift detection hook, Compare timestamps, Enforce tolerance threshold |
 
 #### Acceptance Criteria
 - YAML files created with proper structure and sanitization
 - Concurrent access controlled with Redis locks
 - Drift detection operational with automatic pipeline halt on failure
 
-### Sprint 4: Performance Optimization and Security (9 days)
+#### Sprint 4（9 days）: Performance Optimization and Security
 
 **Objective**: Optimize performance and implement security measures
 
-#### Tasks
-- **Task 4.1**: Performance optimization
-  - Optimize YAML serialization to meet <200ms target
-  - Implement log truncation at 50,000 characters
-  - Add sub-directory partitioning planning for >10,000 files
-  - *Dependencies: module:persistence*
-
-- **Task 4.2**: Security and sanitization
-  - Implement log cleaner for sensitive data
-  - Redact environment variables and credentials
-  - Sanitize `tool_call` entries before persistence
-  - *Dependencies: module:persistence*
-
-- **Task 4.3**: LLM stack integration
-  - Configure LLM inference stack for RTX 2070 SUPER
-  - Implement shared embedding RPC service
-  - Setup model deployment and resource allocation
-  - *Dependencies: infra:llm-stack, infra:deployment*
+| タスクID | タスク名 | モジュールヒント | 成果物 |
+|----------|----------|------------------|--------|
+| 4-1 | Performance optimization | module:persistence | Optimize YAML serialization, Implement log truncation, Add sub-directory partitioning |
+| 4-2 | Security and sanitization | module:persistence | Implement log cleaner, Redact credentials, Sanitize tool_call entries |
+| 4-3 | LLM stack integration | infra:llm-stack | Configure inference stack, Implement shared embedding RPC, Setup model deployment |
 
 #### Acceptance Criteria
 - Performance targets met (<200ms serialization/write)
 - All sensitive data properly sanitized
 - LLM stack operational within VRAM constraints
 
-### Sprint 5: Skill Evolution and VectorDB Integration (7 days)
+#### Sprint 5（7 days）: Skill Evolution and VectorDB Integration
 
 **Objective**: Enable system learning from successful task outcomes
 
-#### Tasks
-- **Task 5.1**: Vector database setup
-  - Initialize ChromaDB with `sentence-transformers/all-MiniLM-L6-v2`
-  - Apply quantization for RTX 2070 SUPER VRAM limits
-  - Implement vector storage and retrieval operations
-  - *Dependencies: db:chroma, infra:deployment*
-
-- **Task 5.2**: Skill registration pipeline
-  - Implement Jiju gatekeeper logic
-  - Filter tasks for promotion: `(score >= 80) AND (status == COMPLETED)`
-  - Configure review score threshold enforcement
-  - *Dependencies: skill:retrieval-logic, review:score-threshold*
-
-- **Task 5.3**: Weighted retrieval logic
-  - Develop ranking algorithm: `FinalScore = (0.7 * CosineSimilarity) + (0.3 * SuccessRate)`
-  - Implement Top-3 skill injection system
-  - Enforce 1,000-token truncation for code snippets
-  - *Dependencies: skill:retrieval-logic*
+| タスクID | タスク名 | モジュールヒント | 成果物 |
+|----------|----------|------------------|--------|
+| 5-1 | Vector database setup | db:chroma | Initialize ChromaDB with transformers, Apply quantization for VRAM limits, Implement vector operations |
+| 5-2 | Skill registration pipeline | module:jiju | Implement gatekeeper logic, Filter tasks for promotion, Configure score threshold |
+| 5-3 | Weighted retrieval logic | module:jiju | Develop ranking algorithm, Implement Top-3 skill injection, Enforce token truncation |
 
 #### Acceptance Criteria
 - ChromaDB operational with quantized models
 - Skill promotion pipeline functional with proper filtering
 - Skill retrieval and injection working with weighted scoring
 
-### Sprint 6: Testing and Dashboard Integration (6 days)
+#### Sprint 6（6 days）: Testing and Dashboard Integration
 
 **Objective**: Comprehensive testing and operational visibility
 
-#### Tasks
-- **Task 6.1**: Comprehensive testing
-  - Unit tests for all utility functions and modules
-  - Integration tests with simulated agent environments
-  - Load testing for concurrent operations
-  - Performance validation under stress
-
-- **Task 6.2**: Dashboard and monitoring
-  - Implement failed task visibility on dashboard
-  - Add system health monitoring
-  - Create operational metrics and alerts
-  - *Dependencies: ops:failure-visibility*
-
-- **Task 6.3**: Documentation and deployment
-  - Complete technical documentation
-  - Create deployment guides
-  - Final system integration and validation
+| タスクID | タスク名 | モジュールヒント | 成果物 |
+|----------|----------|------------------|--------|
+| 6-1 | Comprehensive testing | module:executor | Unit tests for utilities, Integration tests with agents, Load testing for concurrency |
+| 6-2 | Dashboard and monitoring | module:monitor | Failed task visibility, System health monitoring, Operational metrics |
+| 6-3 | Documentation and deployment | module:kanpaku | Technical documentation, Deployment guides, System integration |
 
 #### Acceptance Criteria
 - All tests passing with >95% coverage
