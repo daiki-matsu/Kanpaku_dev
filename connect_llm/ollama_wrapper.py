@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Ollama用のラッパー
-mannix/deepseek-coder-v2-lite-instruct:q5_k_mとgemma4:26b-a4bに対応
+qwen3-coder:30bとgemma4:26b-a4bに対応
 """
 
 import argparse
@@ -32,13 +32,13 @@ except ImportError:
 class OllamaWrapper:
     """Ollamaモデルのラッパークラス"""
     
-    def __init__(self, model_name: str = "mannix/deepseek-coder-v2-lite-instruct:q5_k_m", 
+    def __init__(self, model_name: str = "qwen3-coder:30b", 
                  host: Optional[str] = None):
         """
         OllamaWrapperを初期化
         
         Args:
-            model_name: 使用するモデル名（デフォルト: mannix/deepseek-coder-v2-lite-instruct:q5_k_m）
+            model_name: 使用するモデル名（デフォルト: qwen3-coder:30b）
             host: Ollamaサーバーのホスト（指定がない場合は.envファイルから取得）
         """
         self.model_name = model_name
@@ -192,8 +192,8 @@ def main():
     """コマンドラインインターフェース"""
     parser = argparse.ArgumentParser(description="Ollamaモデル用ラッパー")
     parser.add_argument("prompt", nargs="?", help="送信するプロンプト（指定がない場合はstdinから読み込み）")
-    parser.add_argument("--model", default="mannix/deepseek-coder-v2-lite-instruct:q5_k_m",
-                       help="使用するモデル名（デフォルト: mannix/deepseek-coder-v2-lite-instruct:q5_k_m）")
+    parser.add_argument("--model", default="qwen3-coder:30b",
+                       help="使用するモデル名（デフォルト: qwen3-coder:30b）")
     parser.add_argument("--host", help="Ollamaサーバーのホスト（指定がない場合は.envファイルから取得）")
     parser.add_argument("--list-models", action="store_true",
                        help="利用可能なモデルを一覧表示")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Google Gemini API用のラッパー
-gemini-3-flash-previewモデルを使用
+gemini-3-flash-preview,gemini-3.1-flash-lite-previewモデルを使用
 """
 
 import argparse
@@ -35,12 +35,12 @@ except ImportError:
 class GeminiWrapper:
     """Google Gemini APIのラッパークラス"""
     
-    def __init__(self, model_name: str = "gemini-3-flash-preview", api_key: Optional[str] = None):
+    def __init__(self, model_name: str = "gemini-3.1-flash-lite-preview", api_key: Optional[str] = None):
         """
         GeminiWrapperを初期化
         
         Args:
-            model_name: 使用するモデル名（デフォルト: gemini-3-flash-preview）
+            model_name: 使用するモデル名（デフォルト: gemini-3.1-flash-lite-preview）
             api_key: Google APIキー（指定がない場合は.envファイルから取得）
         """
         self.model_name = model_name
@@ -96,8 +96,8 @@ def main():
     """コマンドラインインターフェース"""
     parser = argparse.ArgumentParser(description="Google Gemini APIラッパー")
     parser.add_argument("prompt", nargs="?", help="送信するプロンプト（指定がない場合はstdinから読み込み）")
-    parser.add_argument("--model", default="gemini-3-flash-preview", 
-                       help="使用するモデル名（デフォルト: gemini-3-flash-preview）")
+    parser.add_argument("--model", default="gemini-3.1-flash-lite-preview", 
+                       help="使用するモデル名（デフォルト: gemini-3.1-flash-lite-preview）")
     parser.add_argument("--api-key", help="Google APIキー（指定がない場合は.envファイルから取得）")
     parser.add_argument("--print", action="store_true", 
                        help="結果を標準出力に表示（claude --printのように使用）")

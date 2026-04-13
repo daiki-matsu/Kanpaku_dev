@@ -3,7 +3,7 @@ project:
   frameworks: []
   name: Kanpaku
   language: python
-ai_command: python connect_llm/gemini_wrapper.py
+ai_command: python connect_llm/ollama_wrapper.py # python connect_llm/ollama_wrapper.py, connect_llm/gemini_wrapper.py
 coding_principles: null
 scan:
   source_dirs:
@@ -94,10 +94,10 @@ conventions:
   # Review conventions
   - id: review:score-threshold
     description: Review score threshold (>=80 for task completion)
-ai_commands:
-  plan: python connect_llm/gemini_wrapper.py
-  generate: python connect_llm/ollama_wrapper.py
-  implement: python connect_llm/ollama_wrapper.py
+# ai_commands:
+#   plan: python connect_llm/ollama_wrapper.py # # python connect_llm/ollama_wrapper.py, connect_llm/gemini_wrapper.py
+#   generate: python connect_llm/ollama_wrapper.py # # python connect_llm/ollama_wrapper.py, connect_llm/gemini_wrapper.py
+#   implement: python connect_llm/ollama_wrapper.py # # python connect_llm/ollama_wrapper.py, connect_llm/gemini_wrapper.py
 wave_config:
   '1':
   - node_id: test:acceptance-criteria
