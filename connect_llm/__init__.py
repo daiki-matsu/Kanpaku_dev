@@ -3,8 +3,16 @@ CoDD用LLM接続ラッパー
 CoDD ai_commandから呼び出し可能なLLM接続ラッパー
 """
 
-from .gemini_wrapper import GeminiWrapper
+try:
+    from .gemini_wrapper import GeminiWrapper
+    _gemini_available = True
+except ImportError:
+    GeminiWrapper = None
+    _gemini_available = False
+
 from .ollama_wrapper import OllamaWrapper
 from .env_loader import load_env_file, get_env_var
 
-__all__ = ['GeminiWrapper', 'OllamaWrapper', 'load_env_file', 'get_env_var']
+__all__ = ['OllamaWrapper', 'load_env_file', 'get_env_var']
+if _gemini_available:
+    __all__.append('GeminiWrapper')

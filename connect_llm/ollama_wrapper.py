@@ -11,14 +11,17 @@ import json
 import requests
 from typing import Optional, List, Dict, Any
 import logging
+import os
 
 # モジュールとして実行される場合とインポートされる場合の両方に対応
 try:
     from .env_loader import get_env_var
+    from .debug_logger import DebugLogger
 except ImportError:
     # モジュールとして直接実行される場合
     try:
         from connect_llm.env_loader import get_env_var
+        from connect_llm.debug_logger import DebugLogger
     except ImportError:
         # プロジェクトルートにパスを追加
         import sys
@@ -27,6 +30,7 @@ except ImportError:
         if project_root not in sys.path:
             sys.path.insert(0, project_root)
         from connect_llm.env_loader import get_env_var
+        from connect_llm.debug_logger import DebugLogger
 
 
 class OllamaWrapper:
@@ -53,6 +57,7 @@ class OllamaWrapper:
         self.logger = logging.getLogger(__name__)
         self.session = requests.Session()
         self.session.timeout = 60
+        self.debug_logger = DebugLogger()
     
     def _check_connection(self) -> bool:
         """
@@ -127,7 +132,8 @@ class OllamaWrapper:
                 capture_output=True, 
                 text=True, 
                 timeout=60,
-                input=prompt
+                input=prompt,
+                encoding='utf-8'
             )
             
             if result.returncode == 0:
@@ -166,12 +172,18 @@ class OllamaWrapper:
                 self.logger.debug("APIに接続できません。CLIを使用します。")
                 result = self._call_cli(prompt)
             
+            # フィルタリングせずに結果をそのまま使用
+            filtered_result = result
+            
+            # デバッグログを保存
+            self.debug_logger.save_log(self.model_name, prompt, result, filtered_result)
+            
             # デバッグ用に出力をマスキングして表示
             if self.logger.isEnabledFor(logging.DEBUG):
-                masked_result = result[:100] + "..." if len(result) > 100 else result
+                masked_result = filtered_result[:100] + "..." if len(filtered_result) > 100 else filtered_result
                 self.logger.debug(f"Ollamaからの出力（マスキング済み）: {masked_result}")
             
-            return result
+            return filtered_result
             
         except Exception as e:
             error_msg = f"Ollamaエラー: {str(e)}"
@@ -199,12 +211,26 @@ def main():
                        help="利用可能なモデルを一覧表示")
     parser.add_argument("--print", action="store_true",
                        help="結果を標準出力に表示（claude --printのように使用）")
+    parser.add_argument("--debug-log", action="store_true",
+                       help="デバッグログを表示")
+    parser.add_argument("--clear-debug", action="store_true",
+                       help="デバッグログをクリア")
     
     args = parser.parse_args()
     
     try:
         # ラッパーを初期化
         wrapper = OllamaWrapper(model_name=args.model, host=args.host)
+        
+        # デバッグログ表示
+        if args.debug_log:
+            wrapper.debug_logger.display_logs(limit=5)
+            return
+        
+        # デバッグログクリア
+        if args.clear_debug:
+            wrapper.debug_logger.clear_logs()
+            return
         
         # モデル一覧表示
         if args.list_models:

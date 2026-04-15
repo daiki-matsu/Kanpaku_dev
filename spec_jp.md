@@ -17,8 +17,8 @@
 | 将軍システム | 関白システム       | 説明                                                                                              | 使用モデル                                          |
 | ------ | ------------ | ----------------------------------------------------------------------------------------------- | ---------------------------------------------- |
 | 上様     | 帝(Mikado)    | - ユーザー                                                                                          | - 人間                                           |
-| 将軍     | 関白(Kanpaku)  | - ユーザーとの唯一のインターフェース<br>- ゴール設定<br>- 侍従への指示書作成<br>- Skill作成判断                                    | - gemma4-26B-A4B                               |
-| 家老     | 侍従(Jiju)     | - 指示書からタスク分解<br>- 舎人/陰陽師のアサイン<br>- 実行結果のレビュー<br>- ダッシュボード更新<br>- エージェントの監視<br>- 内部的には複数プロセスでまわす | - gemma4-E2B                                   |
+| 将軍     | 関白(Kanpaku)  | - ユーザーとの唯一のインターフェース<br>- ゴール設定<br>- 頭弁への指示書作成<br>- Skill作成判断                                    | - gemma4-26B-A4B                               |
+| 家老     | 頭弁(Tonoben)     | - 指示書からタスク分解<br>- 舎人/陰陽師のアサイン<br>- 実行結果のレビュー<br>- ダッシュボード更新<br>- エージェントの監視<br>- 内部的には複数プロセスでまわす | - gemma4-E2B                                   |
 | 足軽     | 舎人(Toneri)   | - bloom_level:L1～L3を担当<br>- 並列実行<br>- ファイル操作(sandbox必須)                                         | - Bonsai-8B<br>- DeepSeek 6.7B<br>- gemma4-E2B |
 | 軍師     | 陰陽師(Onmyoji) | - bloom_level:L4～L6を担当<br>- 思考専用(実行禁止)<br>- Skill用パターン抽出                                        | - gemma4-26B-A4B                               |
 ### 分岐基準
@@ -35,27 +35,31 @@
 ### 呼び名
 - エージェント → **官職**
 - タスク → **政務**
+- ログ → **日記**
+- ダッシュボード(ユーザーへの報告) → **奏上**
+- プロジェクトチーム → **行事所**
+- skill → **抄**
 ## フロー対応表
-"-"は状態変更なし
+- "-"は状態変更なし
 
 | Event              | task：状態変更      | Agent：状態変更      | 内容                      |
 | ------------------ | -------------- | --------------- | ----------------------- |
 | (ユーザー入力)           | -              | 帝               | チャットで指示                 |
 | ORDER_CREATING     | -              | 関白：thinking     | 指示書作成開始                 |
 | ORDER_CREATED      | -              | 関白：idle         | 指示書作成完了                 |
-| TASK_CREATING      | -              | 侍従：thinking     | タスク作成開始                 |
-| TASK_CREATED       | task：created   | 侍従：thinking     | タスク作成完了                 |
-| TASK_ASSIGNED      | task：assigned  | 侍従：-            | タスク割り当て                 |
+| TASK_CREATING      | -              | 頭弁：thinking     | タスク作成開始                 |
+| TASK_CREATED       | task：created   | 頭弁：thinking     | タスク作成完了                 |
+| TASK_ASSIGNED      | task：assigned  | 頭弁：-            | タスク割り当て                 |
 | TASK_STARTED       | task：doing     | 舎人/陰陽師：thinking | タスク実行開始                 |
 | TASK_COMPLETED     | task：reviewing | 舎人/陰陽師：idle     | タスク目的達成                 |
 | TASK_FAILED        | task：reviewing | 舎人/陰陽師：idle     | タスク要件未達                 |
 | TASK_STALLED       | task：assigned  | 舎人/陰陽師：error    | タイムアウト<br>retry.count++ |
-| REVIEW_STARTED     | -              | 侍従：working      | レビュー開始                  |
-| REVIEW_APPROVED    | -              | 侍従：idle         | レビュー承認                  |
-| REVIEW_REJECTED    | task：assigned  | 侍従：idle         | レビュー否認<br>retry.count++ |
-| REVIEW_STALLED     | task：reviewing | 侍従：error        | タイムアウト<br>retry.count++ |
-| DASHBOARD_UPDATING | -              | 侍従：thinking     | ダッシュボード更新開始             |
-| DASHBOARD_UPDATED  | task：completed | 侍従：idle         | ダッシュボード更新完了             |
+| REVIEW_STARTED     | -              | 頭弁：working      | レビュー開始                  |
+| REVIEW_APPROVED    | -              | 頭弁：idle         | レビュー承認                  |
+| REVIEW_REJECTED    | task：assigned  | 頭弁：idle         | レビュー否認<br>retry.count++ |
+| REVIEW_STALLED     | task：reviewing | 頭弁：error        | タイムアウト<br>retry.count++ |
+| DASHBOARD_UPDATING | -              | 頭弁：thinking     | ダッシュボード更新開始             |
+| DASHBOARD_UPDATED  | task：completed | 頭弁：idle         | ダッシュボード更新完了             |
 | (ユーザー確認)           | -              | 帝               | ダッシュボード確認               |
 | ANALYZE_CREATING   | -              | 関白：thinking     | 分析開始                    |
 | ANALYZE_CREATED    | -              | 関白：idle         | 分析完了+報告                 |
@@ -80,6 +84,7 @@ AgentTimePolicy:
 - 型：Hash
 - キー：tasks:{task_id}
 #### 構成
+- id：`1_1`({タスク分割の実行回数連番} _ {その分割内の連番})で表す
 - setting：タスク作成時の設定項目
 	- type：research | review | analysis | file_write | file_move | file_delete ※今後も追加
 	- priority：優先度を`1(低)～100(高)`で50を基準としてつける	
@@ -90,15 +95,15 @@ AgentTimePolicy:
 	- 'execution'と'answer'両方の`success`を必須とする
 - retry：リトライの回数と理由を記録
 #### status一覧
-1. created：作成後の状態、侍従(LLM)が担当
+1. created：作成後の状態、頭弁(LLM)が担当
 	```yaml
-	id: T4
+	id: 2_4
 	status: created
 	setting:
 	  bloom_level: 3
 	  depends_on:
-	    - T2
-	    - T3
+	    - 2_2
+	    - 2_3
 	  priority: 1
 	  goal: 主な気象用語の語源について調べ、まとめた内容をfile1.mdに保存する
 	  command: 台風の語源を調べ、file1.mdに書き込んでください。
@@ -128,13 +133,13 @@ AgentTimePolicy:
 	```
 2. doing：タスク実行中、review.feedbackに内容がある場合は反映する、タイムアウトの場合は`assigned`へ、舎人/陰陽師が担当
 	```yaml
-	id: T4
+	id: 2_4
 	status: doing
 	setting:
 	  bloom_level: 3
 	  depends_on:
-	    - T2
-	    - T3
+	    - 2_2
+	    - 2_3
 	  priority: 1
 	  goal: 主な気象用語の語源について調べ、まとめた内容をfile1.mdに保存する
 	  command: 台風の語源を調べ、file1.mdに書き込んでください。
@@ -162,18 +167,18 @@ AgentTimePolicy:
 	  created_at: 123456
 	  updated_at: 123458
 	```
-3. reviewing：舎人/陰陽師の実行内容をレビュー待ちまたはレビュー中、タイムアウトの場合はもう一度`reviewing`へ、侍従(CoDDコマンド)が担当
+3. reviewing：舎人/陰陽師の実行内容をレビュー待ちまたはレビュー中、タイムアウトの場合はもう一度`reviewing`へ、頭弁(CoDDコマンド)が担当
 	- `codd validate`(整合性検証): フロントマターの記述形式、依存グラフの不整合、AIが「TODO」などで作業をサボっていないかといった形式的な不備を検査
 	- `codd review`(品質レビュー): ドキュメントの種類に応じた意味的な品質を評価。
 	- レビュー結果は数値化され、80点以上で「PASS」、問題がある場合「FAIL」
 	```yaml
-	id: T4
+	id: 2_4
 	status: reviewing
 	setting:
 	  bloom_level: 3
 	  depends_on:
-	    - T2
-	    - T3
+	    - 2_2
+	    - 2_3
 	  priority: 1
 	  goal: 主な気象用語の語源について調べ、まとめた内容をfile1.mdに保存する
 	  command: 台風の語源を調べ、file1.mdに書き込んでください。
@@ -202,15 +207,15 @@ AgentTimePolicy:
 	  created_at: 123456
 	  updated_at: 123465
 	```
-4. completed：レビュー承認(PASS)およびダッシュボードの更新をもってタスク終了、否認(FAIL)の場合は`assigned`へ、侍従(LLM)が担当
+4. completed：レビュー承認(PASS)およびダッシュボードの更新をもってタスク終了、否認(FAIL)の場合は`assigned`へ、頭弁(LLM)が担当
 	```yaml
-	id: T4
+	id: 2_4
 	status: completed
 	setting:
 	  bloom_level: 3
 	  depends_on:
-	    - T2
-	    - T3
+	    - 2_2
+	    - 2_3
 	  priority: 1
 	  goal: 主な気象用語の語源について調べ、まとめた内容をfile1.mdに保存する
 	  command: 台風の語源を調べ、file1.mdに書き込んでください。
@@ -301,7 +306,7 @@ if redis.call("GET", key).by == my_id then
 end
 ```
 - ハートビート延長
-長時間処理でTTL切れ防止
+	- 長時間処理でTTL切れ防止
 ```bash
 EXPIRE lock:file1.md 300
 ```
@@ -378,7 +383,7 @@ skill_id: S-001
 result: success
 ```
 ## Executor層
-LLMによるファイル操作を実行するための層
+- LLMによるファイル操作を実行するための層
 ### 実装イメージ
 - 呼び出し側
 ```python
@@ -453,7 +458,7 @@ failure_pattern:
 embedding_text: 調査 タスク 要約 ファイル書き込み 成功パターン
 ```
 ### VectorDB
-Chromaを使用
+- Chromaを使用
 #### コレクション構成
 ```python
 collection: skills
@@ -473,11 +478,69 @@ collection: skills
 }
 ```
 ## UI
-- 疑似マルチエージェント：実際はログを1か所に吐き出すだけ
-- tmux + 擬似CLI：ログをエージェントごとに別枠で表示
-- ダッシュボード：Markdownプレビュー
+- Streamlitで開発
+```
++-----------------------------------------------------------------------+
+|                              [ プロジェクト名 ]                         |
++---------------------------+-----------------------+-------------------+
+| 関白                      | 奏上                  | 政務(タスク)詳細  |
+| +-----------------------+ | (ダッシュボード)      |                   |
+| | 詔勅(入力欄)           | |                       |                   |
+| +-----------------------+ |                       |                   |
++-------------+-------------+                       |                   |
+| 頭弁        | 陰陽師      |                       |                   |
+|             |             |                       |                   |
++---+---+---+---+-----------+-----------------------+-------------------|
+|舎1|舎2|舎3|舎4|           | イベントストリーム                        |
++---+---+---+---+-----------+-------------------------------------------+
+```
+### 奏上(ダッシュボード)
+- Markdownプレビュー
+```Markdown
+# 📜 奏上
+
+## 🚨 要対応
+- FAILタスク
+	  - {タスクID}🔥 {FAILタイムスタンプ}
+- retry多発タスク
+	  - {タスクID}🔁 x{retry数}
+
+## ⚙️ 進行中
+- doingタスク数
+- reviewingタスク数
+
+## ✅ 完了
+- 今日の完了数
+- 成功率
+```
+### 擬似CLI
+- エージェントごとに別枠で表示
+- 各エージェント枠の上部に現在のステータスを表示："{指定色の丸}   {ステータス}"で表示
+	- idle：グレー
+	- thinking：青
+	- working：緑
+	- error：赤
+	- retrying：オレンジ
+- イベントを平安貴族風のメッセージで表示
+- スピナーもどき
+	- thinking,working中のハートビートのタイミングに合わせて平安貴族風の作業中メッセージを表示
+	- 例：thinking → "思案中…(30秒)"
+	- 例：doing → "作業中…(retry 3)"
+- クリック → 対応タスクハイライト
+### 政務(タスク)詳細
+- 全タスクをプルダウンを閉じた状態で一覧表示
+	- | id | status | priority | command | agent(未割当時は空欄) |
+- タスクをクリックするとプルダウンを開いて詳細情報を表示
+	- tasksの項目の内、値があるものをすべて表示
+- タスクIDの昇順
+- status(チェックボックス)/priority(範囲)/agent(チェックボックス)でフィルタ
+- クリック → 担当エージェント強調
+### 詔勅(ユーザーメッセージ) 入力欄
+- ユーザーが関白に向けたメッセージを入力できる
+### イベントストリーム
+- 生のイベントログを表示
 ## LLM実行環境
-Ollamaとllama.cppの併用
+- Ollamaとllama.cppの併用
 ### 使用候補モデル
 - Bonsai-8B(llama.cpp)
 - gemma4-26B-A4B(Ollama)
@@ -485,8 +548,4 @@ Ollamaとllama.cppの併用
 - llm-jp-4-8B(llama.cpp)
 - llm-jp-4-32B(llama.cpp)
 - DeepSeek Coder 6.7B(llama.cpp)
-### PCスペック
-| 項目 | 内容 |
-| GPU (VRAM) | NVIDIA RTX 2070 SUPER (8GB) |
-| システムメモリ (RAM) | 64GB DDR4-3200 |
-| CPU | Core i5-13600KF (14C/20T) |
+
