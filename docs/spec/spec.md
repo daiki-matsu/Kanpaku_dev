@@ -258,6 +258,15 @@ XADD events:stream * type {YYYY-MM-DD HH:MM:DD} {event} task:{task_id} agent:{ag
 - ファイルの同時操作を防ぐ、キーが存在したらロックされている
 - 値にはどのエージェントによってロックされているかを入れる
 - エージェントが`error`になったら強制解除する
+- 構成
+```json
+{
+  "target_path": "src/example.py",
+  "locked_by": "toneri_1",
+  "locked_at": 1713355200.0,
+  "expires_at": 1713355260.0
+}
+```
 - lock処理
 ```bash
 SET lock:file1.md {agent_id} EX 300 NX
@@ -278,6 +287,7 @@ end
 - キー：system:state
 - システム全体の状態を表す
 - ダッシュボードの表示内容などに使用予定
+- 構成
 ```json
 {
   "active_agents": 2,
