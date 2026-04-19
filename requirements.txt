@@ -24,3 +24,9 @@ codd-dev
 
 # Gemini API
 google-genai>=0.3.0
+
+# Redis
+redis>=5.0.0
+
+# PyYAML
+pyyaml>=6.0.0
