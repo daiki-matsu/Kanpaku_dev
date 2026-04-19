@@ -1,0 +1,60 @@
+(venv_linux) @PC:/mnt/e/AIAgent/Kanpaku/Kanpaku_py$ pytest tests/sprint1/ -v
+============================================================================== test session starts ==============================================================================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /mnt/e/AIAgent/Kanpaku/Kanpaku_py/venv_linux/bin/python3
+cachedir: .pytest_cache
+rootdir: /mnt/e/AIAgent/Kanpaku/Kanpaku_py
+configfile: pyproject.toml
+plugins: anyio-4.13.0, cov-7.1.0
+collected 28 items                                                                                                                                                              
+
+tests/sprint1/test_integration.py::TestSprint1Integration::test_complete_task_workflow PASSED                                                                             [  3%]
+tests/sprint1/test_integration.py::TestSprint1Integration::test_agent_state_transitions PASSED                                                                            [  7%] 
+tests/sprint1/test_integration.py::TestSprint1Integration::test_task_status_validation PASSED                                                                             [ 10%] 
+tests/sprint1/test_integration.py::TestSprint1Integration::test_safe_io_security_boundaries PASSED                                                                        [ 14%] 
+tests/sprint1/test_integration.py::TestSprint1Integration::test_event_stream_simulation PASSED                                                                            [ 17%]
+tests/sprint1/test_integration.py::TestSprint1Integration::test_system_state_tracking PASSED                                                                              [ 21%] 
+tests/sprint1/test_integration.py::TestSprint1Integration::test_file_lock_simulation PASSED                                                                               [ 25%] 
+tests/sprint1/test_models.py::TestTaskModel::test_task_creation_minimal PASSED                                                                                            [ 28%] 
+tests/sprint1/test_models.py::TestTaskModel::test_task_status_enum PASSED                                                                                                 [ 32%] 
+tests/sprint1/test_models.py::TestTaskModel::test_task_with_complete_data PASSED                                                                                          [ 35%] 
+tests/sprint1/test_models.py::TestAgentModel::test_agent_creation_minimal PASSED                                                                                          [ 39%] 
+tests/sprint1/test_models.py::TestAgentModel::test_agent_status_enum PASSED                                                                                               [ 42%] 
+tests/sprint1/test_models.py::TestAgentModel::test_agent_with_complete_data PASSED                                                                                        [ 46%] 
+tests/sprint1/test_models.py::TestEventModel::test_event_creation_minimal PASSED                                                                                          [ 50%] 
+tests/sprint1/test_models.py::TestEventModel::test_event_with_complete_data PASSED                                                                                        [ 53%]
+tests/sprint1/test_models.py::TestSystemStateModel::test_system_state_creation PASSED                                                                                     [ 57%] 
+tests/sprint1/test_models.py::TestSystemStateModel::test_system_state_defaults PASSED                                                                                     [ 60%] 
+tests/sprint1/test_models.py::TestFileLockModel::test_file_lock_creation PASSED                                                                                           [ 64%] 
+tests/sprint1/test_safe_io.py::TestSafeIO::test_initialization PASSED                                                                                                     [ 67%] 
+tests/sprint1/test_safe_io.py::TestSafeIO::test_safe_path_validation PASSED                                                                                               [ 71%] 
+tests/sprint1/test_safe_io.py::TestSafeIO::test_safe_read_success PASSED                                                                                                  [ 75%] 
+tests/sprint1/test_safe_io.py::TestSafeIO::test_safe_read_file_not_found PASSED                                                                                           [ 78%] 
+tests/sprint1/test_safe_io.py::TestSafeIO::test_safe_read_path_violation PASSED                                                                                           [ 82%] 
+tests/sprint1/test_safe_io.py::TestSafeIO::test_safe_write_success PASSED                                                                                                 [ 85%] 
+tests/sprint1/test_safe_io.py::TestSafeIO::test_safe_write_nested_directory PASSED                                                                                        [ 89%] 
+tests/sprint1/test_safe_io.py::TestSafeIO::test_safe_write_path_violation PASSED                                                                                          [ 92%] 
+tests/sprint1/test_safe_io.py::TestSafeIO::test_safe_write_empty_content PASSED                                                                                           [ 96%] 
+tests/sprint1/test_safe_io.py::TestSafeIO::test_safe_write_unicode_content PASSED                                                                                         [100%]
+
+================================================================================ tests coverage =================================================================================
+________________________________________________________________ coverage: platform linux, python 3.12.3-final-0 ________________________________________________________________
+
+Name                       Stmts   Miss  Cover   Missing
+--------------------------------------------------------
+src/__init__.py                0      0   100%
+src/db/__init__.py             0      0   100%
+src/db/redis_client.py        32     32     0%   1-53
+src/db/state_manager.py       32     32     0%   1-60
+src/db/yaml_store.py          19     19     0%   1-35
+src/executor/__init__.py       0      0   100%
+src/executor/safe_io.py       43      5    88%   14, 78-79, 110-111
+src/models/__init__.py         0      0   100%
+src/models/agents.py          15      0   100%
+src/models/events.py          10      0   100%
+src/models/lock.py             6      0   100%
+src/models/state.py            6      0   100%
+src/models/tasks.py           49      0   100%
+--------------------------------------------------------
+TOTAL                        212     88    58%
+Coverage HTML written to dir htmlcov
+============================================================================== 28 passed in 1.91s ===============================================================================

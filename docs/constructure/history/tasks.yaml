@@ -1,0 +1,34 @@
+# docs/history/tasks/1_1.yaml として保存される形式の雛形
+- recorded_at: "2026-04-17 21:05:00"
+  id: '2_4'
+  status: completed
+  setting:
+    bloom_level: 3
+    depends_on:
+      - '2_2'
+      - '2_3'
+    priority: 1
+    goal: 主な気象用語の語源について調べ、まとめた内容をfile1.mdに保存する
+    command: 台風の語源を調べ、file1.mdに書き込んでください。
+    type: file_write
+  assigned:
+    to: toneri-2
+    echo_message: 歌を詠んで参りました！
+  answer:
+    status: success
+    summary: 語源は英語の'Typhoon'
+    details: 台風の語源は英語の'Typhoon'だと言われていますが、諸説あります。
+  execution:
+    status: success
+    action: write
+    path: file1.md
+    logs: 書き込みに成功しました。
+  review:
+    status: success
+    score: 82
+    feedback: 曖昧ですが内容は正しいです。ファイル書き込み成功です。
+  retry:
+    count: 2
+    reason:
+      - doing_timeout
+      - reviewing_failed
