@@ -1,0 +1,70 @@
+(venv_linux) daiki@PC:/mnt/e/AIAgent/Kanpaku/Kanpaku_py$ pytest tests/sprint2/ -v
+
+=== Sprint 2 テスト開始 ===
+Redisサーバーが起動していることを確認してください
+============================================================================== test session starts ==============================================================================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /mnt/e/AIAgent/Kanpaku/Kanpaku_py/venv_linux/bin/python3
+cachedir: .pytest_cache
+rootdir: /mnt/e/AIAgent/Kanpaku/Kanpaku_py
+configfile: pyproject.toml
+plugins: anyio-4.13.0, cov-7.1.0
+collected 30 items                                                                                                                                                              
+
+tests/sprint2/test_agent_loop.py::TestAgentLoop::test_agent_initialization PASSED                                                                                         [  3%]
+tests/sprint2/test_agent_loop.py::TestAgentLoop::test_heartbeat_update PASSED                                                                                             [  6%]
+tests/sprint2/test_agent_loop.py::TestAgentLoop::test_message_handling_status_change PASSED                                                                               [ 10%]
+tests/sprint2/test_agent_loop.py::TestAgentLoop::test_message_handling_error_status PASSED                                                                                [ 13%]
+tests/sprint2/test_agent_loop.py::TestAgentLoop::test_inbox_message_retrieval PASSED                                                                                      [ 16%]
+tests/sprint2/test_agent_loop.py::TestAgentLoop::test_pubsub_notification_wakeup PASSED                                                                                   [ 20%]
+tests/sprint2/test_agent_loop.py::TestAgentLoop::test_wait_for_orders_simulation PASSED                                                                                   [ 23%]
+tests/sprint2/test_agent_loop.py::TestAgentLoop::test_multiple_concurrent_agents PASSED                                                                                   [ 26%]
+tests/sprint2/test_agent_loop.py::TestAgentLoop::test_agent_status_persistence PASSED                                                                                     [ 30%]
+tests/sprint2/test_communication.py::TestInboxAndPubSub::test_inbox_persistence PASSED                                                                                    [ 33%] 
+tests/sprint2/test_communication.py::TestInboxAndPubSub::test_fifo_order PASSED                                                                                           [ 36%]
+tests/sprint2/test_communication.py::TestInboxAndPubSub::test_pubsub_notification PASSED                                                                                  [ 40%]
+tests/sprint2/test_communication.py::TestInboxAndPubSub::test_send_message_integration PASSED                                                                             [ 43%]
+tests/sprint2/test_communication.py::TestInboxAndPubSub::test_multiple_agents_communication PASSED                                                                        [ 46%]
+tests/sprint2/test_state_validation.py::TestStateValidationAndRetry::test_valid_state_transitions PASSED                                                                  [ 50%]
+tests/sprint2/test_state_validation.py::TestStateValidationAndRetry::test_invalid_state_transition_blocked PASSED                                                         [ 53%]
+tests/sprint2/test_state_validation.py::TestStateValidationAndRetry::test_all_invalid_transitions PASSED                                                                  [ 56%]
+tests/sprint2/test_state_validation.py::TestStateValidationAndRetry::test_retry_count_increment_on_doing_failure PASSED                                                   [ 60%]
+tests/sprint2/test_state_validation.py::TestStateValidationAndRetry::test_retry_count_increment_on_execution_error PASSED                                                 [ 63%]
+tests/sprint2/test_state_validation.py::TestStateValidationAndRetry::test_retry_limit_exceeded PASSED                                                                     [ 66%]
+tests/sprint2/test_state_validation.py::TestStateValidationAndRetry::test_retry_reason_accumulation PASSED                                                                [ 70%]
+tests/sprint2/test_state_validation.py::TestStateValidationAndRetry::test_valid_reviewing_transitions PASSED                                                              [ 73%]
+tests/sprint2/test_tonoben_decompose.py::TestTonobenDecompose::test_tonoben_initialization PASSED                                                                         [ 76%]
+tests/sprint2/test_tonoben_decompose.py::TestTonobenDecompose::test_order_received_processing PASSED                                                                      [ 80%]
+tests/sprint2/test_tonoben_decompose.py::TestTonobenDecompose::test_task_creation_and_assignment PASSED                                                                   [ 83%]
+tests/sprint2/test_tonoben_decompose.py::TestTonobenDecompose::test_task_dependency_resolution PASSED                                                                     [ 86%]
+tests/sprint2/test_tonoben_decompose.py::TestTonobenDecompose::test_unknown_message_type_handling PASSED                                                                  [ 90%]
+tests/sprint2/test_tonoben_decompose.py::TestTonobenDecompose::test_llm_error_handling PASSED                                                                             [ 93%]
+tests/sprint2/test_tonoben_decompose.py::TestTonobenDecompose::test_yaml_parsing_error_handling PASSED                                                                    [ 96%]
+tests/sprint2/test_tonoben_decompose.py::TestTonobenDecompose::test_multiple_task_assignment PASSED                                                                       [100%]
+=== Sprint 2 テスト完了 ===
+
+
+================================================================================ tests coverage =================================================================================
+________________________________________________________________ coverage: platform linux, python 3.12.3-final-0 ________________________________________________________________
+
+Name                       Stmts   Miss  Cover   Missing
+--------------------------------------------------------
+src/__init__.py                0      0   100%
+src/agents/base_agent.py      52      6    88%   44, 51-52, 58-59, 84
+src/agents/tonoben.py         53      1    98%   102
+src/db/__init__.py             0      0   100%
+src/db/redis_client.py        89     22    75%   24, 36, 38-41, 46-47, 55, 61-62, 98-103, 109-115, 119
+src/db/state_manager.py       58     10    83%   87-89, 94-96, 101-104
+src/db/yaml_store.py          19      0   100%
+src/executor/__init__.py       0      0   100%
+src/executor/safe_io.py       43     43     0%   1-111
+src/models/__init__.py         0      0   100%
+src/models/agents.py          15      0   100%
+src/models/events.py          10      0   100%
+src/models/lock.py             6      0   100%
+src/models/message.py         12      0   100%
+src/models/state.py            6      0   100%
+src/models/tasks.py           50      0   100%
+--------------------------------------------------------
+TOTAL                        413     82    80%
+Coverage HTML written to dir htmlcov
+============================================================================== 30 passed in 15.71s ==============================================================================

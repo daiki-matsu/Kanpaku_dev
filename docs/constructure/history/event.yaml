@@ -1,0 +1,10 @@
+- recorded_at: "2026-04-20T10:00:00"
+  state:
+    event_id: "evt_123456789"
+    timestamp: "2026-04-20T10:00:00"
+    event_type: "TASK_ASSIGNED"
+    agent_id: "toneri_1"
+    task_id: "2_4"
+    details:
+      status: "assigned"
+      message: "頭弁より舎人-1へ政務が割り当てられました"

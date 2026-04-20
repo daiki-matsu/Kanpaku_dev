@@ -1,0 +1,15 @@
+- recorded_at: "2026-04-20T09:00:00"
+  state:
+    id: "toneri_1"
+    role: "舎人"
+    status: "idle"
+    current_task_id: null
+    last_heartbeat: 1713574800.0
+
+- recorded_at: "2026-04-20T10:00:00"
+  state:
+    id: "toneri_1"
+    role: "舎人"
+    status: "working"
+    current_task_id: "2_4"
+    last_heartbeat: 1713578400.0
