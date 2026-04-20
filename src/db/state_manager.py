@@ -1,11 +1,13 @@
-from models.tasks import Task       
+from models.tasks import Task, TaskStatus
 from models.events import Event
 from db.redis_client import RedisClient
 from db.yaml_store import YamlStore
 import uuid
+import json
 from models.state import SystemState
 from models.lock import FileLock
 from models.agents import Agent
+from models.message import Message
 import time
 
 class StateManager:
@@ -14,34 +16,76 @@ class StateManager:
         self.redis = RedisClient()
         self.yaml = YamlStore()
 
+    # 朝廷の絶対的な掟（許可される状態遷移の定義）
+    # ※やり直し（failed -> assigned 等）を考慮し、後段のSprintも見据えた遷移を定義
+    VALID_TRANSITIONS = {
+        TaskStatus.CREATED: [TaskStatus.ASSIGNED],
+        TaskStatus.ASSIGNED: [TaskStatus.DOING],
+        TaskStatus.DOING: [TaskStatus.REVIEWING, TaskStatus.ASSIGNED, TaskStatus.FAILED],
+        TaskStatus.REVIEWING: [TaskStatus.COMPLETED, TaskStatus.ASSIGNED],
+        TaskStatus.COMPLETED: [],
+        TaskStatus.FAILED: []
+    }
+
     def update_task(self, task: Task, event_type: str = "TASK_UPDATED") -> None:
         """
         政務の状態を更新し、RedisとYAMLの両方に記す。
-        同時にイベントを発行する。
+        その際、状態遷移の掟とリトライ上限を厳格に検分する。
         """
-        # 1. Redisへの書き込み（現在の状態）
+        # 1. 蔵から現在の姿（更新前）を取得
+        current_task = self.redis.get_task(task.id)
+
+        if current_task:
+            # 2. 状態遷移の掟（バリデーション）チェック
+            # Skip validation for new task creation (TASK_CREATED event)
+            if event_type != "TASK_CREATED" and current_task.status != task.status:
+                allowed_next_states = self.VALID_TRANSITIONS.get(current_task.status, [])
+                if task.status not in allowed_next_states:
+                    error_msg = f"【掟破り】政務 '{task.id}' にて許可されざる状態遷移（{current_task.status.value} → {task.status.value}）が試みられました。"
+                    print(error_msg)
+                    # 不正な更新は朝廷を揺るがすため、例外を投げて書き込みをブロック
+                    raise ValueError(error_msg)
+
+            # 3. やり直し（リトライ）の管理
+            # 作業中（doing）からアサイン（assigned）へ戻る、または実行ステータスがerrorになった場合
+            if current_task.status == TaskStatus.DOING and (
+                task.status == TaskStatus.ASSIGNED or task.execution.status == "error"
+            ):
+                task.retry.count += 1
+                task.retry.reason.append("doing_failed")
+                print(f"【やり直し】政務 '{task.id}' が失敗いたしました。リトライ回数: {task.retry.count}/{task.retry.max_limit}")
+
+                # リトライ上限超過の検分
+                if task.retry.count > task.retry.max_limit:
+                    print(f"【無念】政務 '{task.id}' は限界（リトライ上限）に達しました。FAILEDといたします。")
+                    task.status = TaskStatus.FAILED
+                    event_type = "TASK_FAILED"
+                    # FAILED時は実行ステータスも強制的に書き換え
+                    task.execution.status = "failed"
+
+        # 4. Redisへの書き込み（現在の状態）
         self.redis.save_task(task)
         
-        # 2. YAMLへの書き込み（永続履歴）
-        self.yaml.save_history(entity_type="task", entity_id=task.id, data=task.model_dump())
+        # 5. YAMLへの書き込み（永続履歴）
+        self.yaml.save_history(entity_type="task", entity_id=task.id, data=json.loads(task.model_dump_json()))
         
-        # 3. イベントの発行（朝廷への布告）
+        # 6. イベントの発行（朝廷への布告）
         event = Event(
             event_id=str(uuid.uuid4()),
             event_type=event_type,
             task_id=task.id,
-            agent_id=task.agent_id,
+            agent_id=task.assigned.to if task.assigned else None,
             details={"status": task.status.value}
         )
         self.redis.add_event(event)
-        self.yaml.save_history(entity_type="event", entity_id="stream_log", data=event.model_dump())
+        self.yaml.save_history(entity_type="event", entity_id="stream_log", data=json.loads(event.model_dump_json()))
         
-        # 平安貴族風のログ出力（世界観の維持）
         print(f"【詔勅更新】政務 '{task.id}' が '{task.status.value}' の状態となり申した。")
 
     def update_agent(self, agent: Agent, event_type: str = "AGENT_UPDATED") -> None:
         """官職の状態を更新"""
         self.redis.save_agent(agent)
+        self.yaml.save_history(entity_type="agent", entity_id=agent.id, data=json.loads(agent.model_dump_json()))
         self.yaml.save_history(entity_type="agent", entity_id=agent.id, data=agent.model_dump())
         # イベントの発行も必要に応じて追加
 
@@ -58,3 +102,17 @@ class StateManager:
         self.yaml.save_history(entity_type="lock", entity_id=lock.target_path.replace("/", "_"), data=lock.model_dump())
         print(f"【施錠】{lock.locked_by} が '{lock.target_path}' の専有を開始いたしました。")
         return True
+
+    def send_message(self, message: Message) -> None:
+        """
+        特定の官職へ文を送り、同時に狼煙を上げて知らせる。
+        """
+        # 1. Inboxへ投函（データ消失防止）
+        self.redis.push_inbox(agent_id=message.receiver_id, message=message)
+        
+        # 2. 狼煙（Pub/Sub）を上げる（即時起床用）
+        # チャンネル名は "notify:{agent_id}" とする
+        channel = f"notify:{message.receiver_id}"
+        self.redis.publish_notification(channel=channel, event_type=message.message_type)
+        
+        print(f"【伝令】{message.sender_id} より {message.receiver_id} 宛に '{message.message_type}' の文が送られました。")

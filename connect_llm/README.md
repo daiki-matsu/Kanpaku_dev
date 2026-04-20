@@ -7,7 +7,7 @@ CoDD ai_command  from callable LLM connection wrappers
 This package provides LLM connection wrappers that can be used with CoDD's `ai_command` configuration:
 
 - **GeminiWrapper**: Google Gemini API 3-flash-preview connection
-- **OllamaWrapper**: Local Ollama models connection
+- **ollamaWrapper**: Local Ollama models connection
 
 ## Installation
 

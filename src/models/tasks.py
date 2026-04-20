@@ -40,6 +40,7 @@ class ReviewInfo(BaseModel):
 
 class RetryInfo(BaseModel):
     count: int = 0
+    max_limit: int = 5
     reason: List[str] = Field(default_factory=list)
 
 class TimingInfo(BaseModel):

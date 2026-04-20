@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Ollama用のラッパー
+ollama用のラッパー
 qwen3-coder:30bとgemma4:26b-a4bに対応
 """
 
@@ -33,17 +33,17 @@ except ImportError:
         from connect_llm.debug_logger import DebugLogger
 
 
-class OllamaWrapper:
-    """Ollamaモデルのラッパークラス"""
+class ollamaWrapper:
+    """ollamaモデルのラッパークラス"""
     
     def __init__(self, model_name: str = "qwen3-coder:30b", 
                  host: Optional[str] = None):
         """
-        OllamaWrapperを初期化
+        ollamaWrapperを初期化
         
         Args:
             model_name: 使用するモデル名（デフォルト: qwen3-coder:30b）
-            host: Ollamaサーバーのホスト（指定がない場合は.envファイルから取得）
+            host: ollamaサーバーのホスト（指定がない場合は.envファイルから取得）
         """
         self.model_name = model_name
         
@@ -61,7 +61,7 @@ class OllamaWrapper:
     
     def _check_connection(self) -> bool:
         """
-        Ollamaサーバーへの接続を確認
+        ollamaサーバーへの接続を確認
         
         Returns:
             接続できている場合はTrue
@@ -91,7 +91,7 @@ class OllamaWrapper:
     
     def _call_api(self, prompt: str) -> str:
         """
-        Ollama APIを直接呼び出し
+        ollama APIを直接呼び出し
         
         Args:
             prompt: 送信するプロンプト
@@ -113,11 +113,11 @@ class OllamaWrapper:
             else:
                 raise Exception(f"APIエラー: {response.status_code}")
         except Exception as e:
-            raise Exception(f"Ollama API呼び出しエラー: {str(e)}")
+            raise Exception(f"ollama API呼び出しエラー: {str(e)}")
     
     def _call_cli(self, prompt: str) -> str:
         """
-        Ollama CLIを呼び出し（APIフォールバック用）
+        ollama CLIを呼び出し（APIフォールバック用）
         
         Args:
             prompt: 送信するプロンプト
@@ -142,11 +142,11 @@ class OllamaWrapper:
                 raise Exception(f"CLIエラー: {result.stderr}")
                 
         except subprocess.TimeoutExpired:
-            raise Exception("Ollama CLIがタイムアウトしました")
+            raise Exception("ollama CLIがタイムアウトしました")
         except FileNotFoundError:
-            raise Exception("Ollamaがインストールされていません")
+            raise Exception("ollamaがインストールされていません")
         except Exception as e:
-            raise Exception(f"Ollama CLI呼び出しエラー: {str(e)}")
+            raise Exception(f"ollama CLI呼び出しエラー: {str(e)}")
     
     def __call__(self, prompt: str) -> str:
         """
@@ -162,7 +162,7 @@ class OllamaWrapper:
             # デバッグ用に入力をマスキングして表示
             if self.logger.isEnabledFor(logging.DEBUG):
                 masked_prompt = prompt[:50] + "..." if len(prompt) > 50 else prompt
-                self.logger.debug(f"Ollamaへの入力 ({self.model_name})（マスキング済み）: {masked_prompt}")
+                self.logger.debug(f"ollamaへの入力 ({self.model_name})（マスキング済み）: {masked_prompt}")
             
             # まずAPIを試す
             if self._check_connection():
@@ -181,12 +181,12 @@ class OllamaWrapper:
             # デバッグ用に出力をマスキングして表示
             if self.logger.isEnabledFor(logging.DEBUG):
                 masked_result = filtered_result[:100] + "..." if len(filtered_result) > 100 else filtered_result
-                self.logger.debug(f"Ollamaからの出力（マスキング済み）: {masked_result}")
+                self.logger.debug(f"ollamaからの出力（マスキング済み）: {masked_result}")
             
             return filtered_result
             
         except Exception as e:
-            error_msg = f"Ollamaエラー: {str(e)}"
+            error_msg = f"ollamaエラー: {str(e)}"
             self.logger.error(error_msg)
             raise RuntimeError(error_msg)
     
@@ -202,11 +202,11 @@ class OllamaWrapper:
 
 def main():
     """コマンドラインインターフェース"""
-    parser = argparse.ArgumentParser(description="Ollamaモデル用ラッパー")
+    parser = argparse.ArgumentParser(description="ollamaモデル用ラッパー")
     parser.add_argument("prompt", nargs="?", help="送信するプロンプト（指定がない場合はstdinから読み込み）")
     parser.add_argument("--model", default="qwen3-coder:30b",
                        help="使用するモデル名（デフォルト: qwen3-coder:30b）")
-    parser.add_argument("--host", help="Ollamaサーバーのホスト（指定がない場合は.envファイルから取得）")
+    parser.add_argument("--host", help="ollamaサーバーのホスト（指定がない場合は.envファイルから取得）")
     parser.add_argument("--list-models", action="store_true",
                        help="利用可能なモデルを一覧表示")
     parser.add_argument("--print", action="store_true",
@@ -220,7 +220,7 @@ def main():
     
     try:
         # ラッパーを初期化
-        wrapper = OllamaWrapper(model_name=args.model, host=args.host)
+        wrapper = ollamaWrapper(model_name=args.model, host=args.host)
         
         # デバッグログ表示
         if args.debug_log:
