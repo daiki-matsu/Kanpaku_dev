@@ -1,0 +1,304 @@
+- recorded_at: '2026-04-21T21:09:36.350825'
+  state:
+    answer:
+      details: null
+      status: null
+      summary: null
+    assigned:
+      echo_message: 頭弁より舎人へ、速やかなる実行を命ず。
+      to: toneri_1
+    execution:
+      action: null
+      last_error: null
+      logs: null
+      path: null
+      status: running
+    id: '1_2'
+    retry:
+      count: 0
+      max_limit: 5
+      reason: []
+    review:
+      feedback: null
+      score: null
+      status: null
+    setting:
+      bloom_level: 2
+      command: 読み込んだドキュメントを分析し、プロジェクトの全体的な構造（アーキテクチャ、依存関係、主要な機能群）を要約し、構造図の草案を作成する。
+      depends_on:
+      - '1_1'
+      goal: 収集した情報に基づき、プロジェクトの主要な構成要素（フェーズ、モジュール、関係性）を理解し、概要をまとめる。
+      priority: 70
+      type: review
+    status: doing
+    timing:
+      created_at: 1776756950
+      updated_at: 1776773376
+- recorded_at: '2026-04-21T21:09:36.364825'
+  state:
+    answer:
+      details: null
+      status: null
+      summary: null
+    assigned:
+      echo_message: 頭弁より舎人へ、速やかなる実行を命ず。
+      to: toneri_1
+    execution:
+      action: null
+      last_error: '''task'''
+      logs: null
+      path: null
+      status: error
+    id: '1_2'
+    retry:
+      count: 1
+      max_limit: 5
+      reason:
+      - doing_failed
+    review:
+      feedback: null
+      score: null
+      status: null
+    setting:
+      bloom_level: 2
+      command: 読み込んだドキュメントを分析し、プロジェクトの全体的な構造（アーキテクチャ、依存関係、主要な機能群）を要約し、構造図の草案を作成する。
+      depends_on:
+      - '1_1'
+      goal: 収集した情報に基づき、プロジェクトの主要な構成要素（フェーズ、モジュール、関係性）を理解し、概要をまとめる。
+      priority: 70
+      type: review
+    status: assigned
+    timing:
+      created_at: 1776756950
+      updated_at: 1776773376
+- recorded_at: '2026-04-21T21:09:36.502693'
+  state:
+    answer:
+      details: null
+      status: null
+      summary: null
+    assigned:
+      echo_message: 頭弁より舎人へ、速やかなる実行を命ず。
+      to: toneri_1
+    execution:
+      action: null
+      last_error: '''task'''
+      logs: null
+      path: null
+      status: running
+    id: '1_2'
+    retry:
+      count: 1
+      max_limit: 5
+      reason:
+      - doing_failed
+    review:
+      feedback: null
+      score: null
+      status: null
+    setting:
+      bloom_level: 2
+      command: 読み込んだドキュメントを分析し、プロジェクトの全体的な構造（アーキテクチャ、依存関係、主要な機能群）を要約し、構造図の草案を作成する。
+      depends_on:
+      - '1_1'
+      goal: 収集した情報に基づき、プロジェクトの主要な構成要素（フェーズ、モジュール、関係性）を理解し、概要をまとめる。
+      priority: 70
+      type: review
+    status: doing
+    timing:
+      created_at: 1776756950
+      updated_at: 1776773376
+- recorded_at: '2026-04-21T21:09:36.529371'
+  state:
+    answer:
+      details: null
+      status: null
+      summary: null
+    assigned:
+      echo_message: 頭弁より舎人へ、速やかなる実行を命ず。
+      to: toneri_1
+    execution:
+      action: null
+      last_error: '''task'''
+      logs: null
+      path: null
+      status: error
+    id: '1_2'
+    retry:
+      count: 2
+      max_limit: 5
+      reason:
+      - doing_failed
+      - doing_failed
+    review:
+      feedback: null
+      score: null
+      status: null
+    setting:
+      bloom_level: 2
+      command: 読み込んだドキュメントを分析し、プロジェクトの全体的な構造（アーキテクチャ、依存関係、主要な機能群）を要約し、構造図の草案を作成する。
+      depends_on:
+      - '1_1'
+      goal: 収集した情報に基づき、プロジェクトの主要な構成要素（フェーズ、モジュール、関係性）を理解し、概要をまとめる。
+      priority: 70
+      type: review
+    status: assigned
+    timing:
+      created_at: 1776756950
+      updated_at: 1776773376
+- recorded_at: '2026-04-21T21:09:36.725902'
+  state:
+    answer:
+      details: null
+      status: null
+      summary: null
+    assigned:
+      echo_message: 頭弁より舎人へ、速やかなる実行を命ず。
+      to: toneri_1
+    execution:
+      action: null
+      last_error: '''task'''
+      logs: null
+      path: null
+      status: running
+    id: '1_2'
+    retry:
+      count: 2
+      max_limit: 5
+      reason:
+      - doing_failed
+      - doing_failed
+    review:
+      feedback: null
+      score: null
+      status: null
+    setting:
+      bloom_level: 2
+      command: 読み込んだドキュメントを分析し、プロジェクトの全体的な構造（アーキテクチャ、依存関係、主要な機能群）を要約し、構造図の草案を作成する。
+      depends_on:
+      - '1_1'
+      goal: 収集した情報に基づき、プロジェクトの主要な構成要素（フェーズ、モジュール、関係性）を理解し、概要をまとめる。
+      priority: 70
+      type: review
+    status: doing
+    timing:
+      created_at: 1776756950
+      updated_at: 1776773376
+- recorded_at: '2026-04-21T21:09:36.756100'
+  state:
+    answer:
+      details: null
+      status: null
+      summary: null
+    assigned:
+      echo_message: 頭弁より舎人へ、速やかなる実行を命ず。
+      to: toneri_1
+    execution:
+      action: null
+      last_error: '''task'''
+      logs: null
+      path: null
+      status: error
+    id: '1_2'
+    retry:
+      count: 3
+      max_limit: 5
+      reason:
+      - doing_failed
+      - doing_failed
+      - doing_failed
+    review:
+      feedback: null
+      score: null
+      status: null
+    setting:
+      bloom_level: 2
+      command: 読み込んだドキュメントを分析し、プロジェクトの全体的な構造（アーキテクチャ、依存関係、主要な機能群）を要約し、構造図の草案を作成する。
+      depends_on:
+      - '1_1'
+      goal: 収集した情報に基づき、プロジェクトの主要な構成要素（フェーズ、モジュール、関係性）を理解し、概要をまとめる。
+      priority: 70
+      type: review
+    status: assigned
+    timing:
+      created_at: 1776756950
+      updated_at: 1776773376
+- recorded_at: '2026-04-21T21:09:37.022445'
+  state:
+    answer:
+      details: null
+      status: null
+      summary: null
+    assigned:
+      echo_message: 頭弁より舎人へ、速やかなる実行を命ず。
+      to: toneri_1
+    execution:
+      action: null
+      last_error: '''task'''
+      logs: null
+      path: null
+      status: running
+    id: '1_2'
+    retry:
+      count: 3
+      max_limit: 5
+      reason:
+      - doing_failed
+      - doing_failed
+      - doing_failed
+    review:
+      feedback: null
+      score: null
+      status: null
+    setting:
+      bloom_level: 2
+      command: 読み込んだドキュメントを分析し、プロジェクトの全体的な構造（アーキテクチャ、依存関係、主要な機能群）を要約し、構造図の草案を作成する。
+      depends_on:
+      - '1_1'
+      goal: 収集した情報に基づき、プロジェクトの主要な構成要素（フェーズ、モジュール、関係性）を理解し、概要をまとめる。
+      priority: 70
+      type: review
+    status: doing
+    timing:
+      created_at: 1776756950
+      updated_at: 1776773377
+- recorded_at: '2026-04-21T21:09:37.062394'
+  state:
+    answer:
+      details: null
+      status: null
+      summary: null
+    assigned:
+      echo_message: 頭弁より舎人へ、速やかなる実行を命ず。
+      to: toneri_1
+    execution:
+      action: null
+      last_error: '''task'''
+      logs: null
+      path: null
+      status: error
+    id: '1_2'
+    retry:
+      count: 4
+      max_limit: 5
+      reason:
+      - doing_failed
+      - doing_failed
+      - doing_failed
+      - doing_failed
+    review:
+      feedback: null
+      score: null
+      status: null
+    setting:
+      bloom_level: 2
+      command: 読み込んだドキュメントを分析し、プロジェクトの全体的な構造（アーキテクチャ、依存関係、主要な機能群）を要約し、構造図の草案を作成する。
+      depends_on:
+      - '1_1'
+      goal: 収集した情報に基づき、プロジェクトの主要な構成要素（フェーズ、モジュール、関係性）を理解し、概要をまとめる。
+      priority: 70
+      type: review
+    status: assigned
+    timing:
+      created_at: 1776756950
+      updated_at: 1776773377

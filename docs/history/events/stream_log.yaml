@@ -1,0 +1,306 @@
+- recorded_at: '2026-04-21T21:09:36.326924'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: 6957463c-e375-4d5f-9f0c-97abae0ba103
+    event_type: TASK_DOING
+    task_id: '1_1'
+    timestamp: '2026-04-21T21:09:36.324391'
+- recorded_at: '2026-04-21T21:09:36.342354'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: 38fcbad7-695c-4601-8afb-dda91cadb315
+    event_type: TASK_RETRYING
+    task_id: '1_1'
+    timestamp: '2026-04-21T21:09:36.339721'
+- recorded_at: '2026-04-21T21:09:36.355234'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: 3055921f-307e-4fdf-98bc-be9a1694482a
+    event_type: TASK_DOING
+    task_id: '1_2'
+    timestamp: '2026-04-21T21:09:36.353500'
+- recorded_at: '2026-04-21T21:09:36.374971'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: 4e68227b-6980-4834-9054-167fc2dd4761
+    event_type: TASK_RETRYING
+    task_id: '1_2'
+    timestamp: '2026-04-21T21:09:36.372150'
+- recorded_at: '2026-04-21T21:09:36.390771'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: 8587dca8-540c-4121-b475-20edf3a23f82
+    event_type: TASK_DOING
+    task_id: '1_3'
+    timestamp: '2026-04-21T21:09:36.388213'
+- recorded_at: '2026-04-21T21:09:36.409472'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: 2ef3dfec-b646-4638-9ba8-118943952a5a
+    event_type: TASK_RETRYING
+    task_id: '1_3'
+    timestamp: '2026-04-21T21:09:36.406763'
+- recorded_at: '2026-04-21T21:09:36.424742'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: ddf2e82a-ae3e-4b9a-ae5a-1e06fb6115b9
+    event_type: TASK_DOING
+    task_id: '1_4'
+    timestamp: '2026-04-21T21:09:36.422048'
+- recorded_at: '2026-04-21T21:09:36.443397'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: db4c7aa8-2f55-4ef2-a129-42c78b70bb56
+    event_type: TASK_RETRYING
+    task_id: '1_4'
+    timestamp: '2026-04-21T21:09:36.441638'
+- recorded_at: '2026-04-21T21:09:36.465034'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: 490cef40-7dd3-4ff2-852b-5f8ab05e9177
+    event_type: TASK_DOING
+    task_id: '1_1'
+    timestamp: '2026-04-21T21:09:36.463030'
+- recorded_at: '2026-04-21T21:09:36.489879'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: 868d678d-8d61-4c00-b117-ff0579e6c894
+    event_type: TASK_RETRYING
+    task_id: '1_1'
+    timestamp: '2026-04-21T21:09:36.488004'
+- recorded_at: '2026-04-21T21:09:36.516171'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: 33620f41-40ab-4b2f-8f67-60a6329a538e
+    event_type: TASK_DOING
+    task_id: '1_2'
+    timestamp: '2026-04-21T21:09:36.513163'
+- recorded_at: '2026-04-21T21:09:36.544707'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: 4383607e-7db2-4944-987d-14664f34c650
+    event_type: TASK_RETRYING
+    task_id: '1_2'
+    timestamp: '2026-04-21T21:09:36.541808'
+- recorded_at: '2026-04-21T21:09:36.570539'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: 5871326a-bc3f-41b8-8503-fe68f3292d34
+    event_type: TASK_DOING
+    task_id: '1_3'
+    timestamp: '2026-04-21T21:09:36.567904'
+- recorded_at: '2026-04-21T21:09:36.597880'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: c59af242-aa96-4dc5-954f-59cf6c5c42f8
+    event_type: TASK_RETRYING
+    task_id: '1_3'
+    timestamp: '2026-04-21T21:09:36.595015'
+- recorded_at: '2026-04-21T21:09:36.622695'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: 79ce1999-268d-496d-b01d-f72ba30e06f6
+    event_type: TASK_DOING
+    task_id: '1_4'
+    timestamp: '2026-04-21T21:09:36.620658'
+- recorded_at: '2026-04-21T21:09:36.648479'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: a34ecb55-d651-409d-8cd9-db062a1ba085
+    event_type: TASK_RETRYING
+    task_id: '1_4'
+    timestamp: '2026-04-21T21:09:36.646640'
+- recorded_at: '2026-04-21T21:09:36.680111'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: bc5aef78-7128-40b7-b489-57672dde11e4
+    event_type: TASK_DOING
+    task_id: '1_1'
+    timestamp: '2026-04-21T21:09:36.677304'
+- recorded_at: '2026-04-21T21:09:36.710259'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: 68e00199-dfd4-462b-9f5d-94c1e0e539c1
+    event_type: TASK_RETRYING
+    task_id: '1_1'
+    timestamp: '2026-04-21T21:09:36.707757'
+- recorded_at: '2026-04-21T21:09:36.740669'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: a8d7fff0-da0a-4382-9dd2-936faa005850
+    event_type: TASK_DOING
+    task_id: '1_2'
+    timestamp: '2026-04-21T21:09:36.737744'
+- recorded_at: '2026-04-21T21:09:36.771850'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: 92fade9a-53b5-448d-982e-8d30de642114
+    event_type: TASK_RETRYING
+    task_id: '1_2'
+    timestamp: '2026-04-21T21:09:36.768968'
+- recorded_at: '2026-04-21T21:09:36.803834'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: 3bcc24cd-3ebb-4bc8-aab8-0120ec11e8ca
+    event_type: TASK_DOING
+    task_id: '1_3'
+    timestamp: '2026-04-21T21:09:36.801895'
+- recorded_at: '2026-04-21T21:09:36.856390'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: 82260347-f741-4ceb-b72c-2b8433fbd6f7
+    event_type: TASK_RETRYING
+    task_id: '1_3'
+    timestamp: '2026-04-21T21:09:36.854494'
+- recorded_at: '2026-04-21T21:09:36.888330'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: 15623269-7819-4bb5-a8b3-26a8cf48e8cf
+    event_type: TASK_DOING
+    task_id: '1_4'
+    timestamp: '2026-04-21T21:09:36.886503'
+- recorded_at: '2026-04-21T21:09:36.923598'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: c75e2889-3b60-411b-b40f-6e166e620652
+    event_type: TASK_RETRYING
+    task_id: '1_4'
+    timestamp: '2026-04-21T21:09:36.921607'
+- recorded_at: '2026-04-21T21:09:36.960526'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: a922af9e-a017-446d-926f-33f0679f901b
+    event_type: TASK_DOING
+    task_id: '1_1'
+    timestamp: '2026-04-21T21:09:36.958175'
+- recorded_at: '2026-04-21T21:09:37.001130'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: 60e08458-ad67-4848-8a1b-13a0fb474e56
+    event_type: TASK_RETRYING
+    task_id: '1_1'
+    timestamp: '2026-04-21T21:09:36.998967'
+- recorded_at: '2026-04-21T21:09:37.043492'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: ee5c58b9-9b13-4a97-b11b-244feb62ea76
+    event_type: TASK_DOING
+    task_id: '1_2'
+    timestamp: '2026-04-21T21:09:37.041528'
+- recorded_at: '2026-04-21T21:09:37.082494'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: 7650b3b7-86c4-41ed-a291-33b27be49800
+    event_type: TASK_RETRYING
+    task_id: '1_2'
+    timestamp: '2026-04-21T21:09:37.080557'
+- recorded_at: '2026-04-21T21:09:37.120269'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: 5681a7cd-5faa-4ce0-b463-2ceca23057c8
+    event_type: TASK_DOING
+    task_id: '1_3'
+    timestamp: '2026-04-21T21:09:37.118407'
+- recorded_at: '2026-04-21T21:09:37.159360'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: 3e8a38cd-2c52-44d6-a17d-8b2b4b854079
+    event_type: TASK_RETRYING
+    task_id: '1_3'
+    timestamp: '2026-04-21T21:09:37.156984'
+- recorded_at: '2026-04-21T21:09:37.207496'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: f2237f5b-c608-4e02-bd67-675a1157b795
+    event_type: TASK_DOING
+    task_id: '1_4'
+    timestamp: '2026-04-21T21:09:37.204140'
+- recorded_at: '2026-04-21T21:09:37.251794'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: 1a1edf1d-b409-4d3d-b42e-f89d33c5fa28
+    event_type: TASK_RETRYING
+    task_id: '1_4'
+    timestamp: '2026-04-21T21:09:37.248622'
+- recorded_at: '2026-04-21T21:09:37.279753'
+  state:
+    agent_id: toneri_1
+    details:
+      status: doing
+    event_id: 5d562f5c-3171-4986-ba60-694fbd1b31ce
+    event_type: TASK_DOING
+    task_id: '1_5'
+    timestamp: '2026-04-21T21:09:37.277282'
+- recorded_at: '2026-04-21T21:09:37.312746'
+  state:
+    agent_id: toneri_1
+    details:
+      status: assigned
+    event_id: 4907e112-93b7-47d7-82e9-10a05d8ac55a
+    event_type: TASK_RETRYING
+    task_id: '1_5'
+    timestamp: '2026-04-21T21:09:37.309952'

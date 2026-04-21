@@ -9,7 +9,7 @@ from models.lock import FileLock
 from models.message import Message
 
 class RedisClient:
-    """蔵（Redis）への出し入れを司る司（つかさ）"""
+    """蔵（Redis）への出し入れを司る"""
     def __init__(self, host='localhost', port=6379, db=0):
         self.client = redis.Redis(host=host, port=port, db=db, decode_responses=True)
 
@@ -149,3 +149,22 @@ class RedisClient:
         ※エージェントの待機ループ内で使用します
         """
         return self.client.pubsub(ignore_subscribe_messages=True)
+
+    def acquire_lock(self, lock: FileLock, ttl: int = 60) -> bool:
+        """
+        アトミックにロックを取得する（Redisの SET NX 機構を利用）。
+        他の者が既にロックしている場合は False を返す。
+        """
+        lock_key = f"lock:{lock.target_path}"
+        # nx=True: キーが存在しない場合のみ保存する。ex=ttl: 有効期限を設定し、永久ロック（デッドロック）を防ぐ。
+        acquired = self.client.set(lock_key, lock.model_dump_json(), nx=True, ex=ttl)
+        return bool(acquired)
+
+    def get_lock(self, target_path: str) -> Optional[FileLock]:
+        """現在のロック状態を確認する"""
+        data = self.client.get(f"lock:{target_path}")
+        return FileLock.model_validate_json(data) if data else None
+
+    def delete_lock(self, target_path: str) -> None:
+        """ロックを削除（解放）する"""
+        self.client.delete(f"lock:{target_path}")

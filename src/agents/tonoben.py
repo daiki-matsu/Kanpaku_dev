@@ -10,11 +10,16 @@ from agents.base_agent import BaseAgent
 from models.message import Message
 from models.tasks import Task, TaskStatus, SettingInfo, AssignedInfo, TimingInfo
 from utility.messages import HeianMessages
+from utility.prompts import SystemPrompts
+
+# グローバル変数としてPROMPTSを設定
+PROMPTS = SystemPrompts()
 
 # connect_llm  import with reload
 import connect_llm.ollama_wrapper
 from connect_llm.ollama_wrapper import ollamaWrapper 
 from connect_llm.yaml_filter import filter_yaml_document # ※yaml文字列を抽出・整形する関数
+from connect_llm.env_loader import get_env_var
 
 class TonobenAgent(BaseAgent):
     """朝廷の実務を取り仕切る"""
@@ -24,7 +29,8 @@ class TonobenAgent(BaseAgent):
 
     def __init__(self):
         super().__init__(agent_id="tonoben", role="頭弁")
-        self.llm = ollamaWrapper(model_name="gemma4:26b-a4b-q4k")
+        host = get_env_var("OLLAMA_HOST_2", None)
+        self.llm = ollamaWrapper(model_name="gemma4:e2b", host=host)
 
     def process_message(self, message: Message) -> None:
         if message.message_type == "ORDER_RECEIVED":
@@ -38,48 +44,7 @@ class TonobenAgent(BaseAgent):
         print(HeianMessages.TONOBEN_ORDER_RECEIVED.format(instruction=instruction))
 
         # 1. 高精度化されたタスク分解プロンプト（Chain of Thought 導入）
-        prompt = f"""
-        あなたはシステム開発プロジェクトを指揮する優秀なマネージャーです。
-        与えられた「指示」を分析し、自律AIエージェントが実行可能な粒度のサブタスクに分解してください。
-
-        指示: {instruction}
-
-        【思考プロセス（必ずこの順序で思考すること）】
-        1. 指示の全体目標を正確に把握する。
-        2. 目標達成に必要な具体的な手順をステップ順に洗い出す。
-        3. 各手順の依存関係（どのタスクが完了しないと次が始まらないか）を整理する。
-        4. 各手順に対し、以下の定義に従って適切な属性（bloom_level, type, priority）を割り当てる。
-
-        【属性の定義】
-        * bloom_level (1〜6の整数):
-        1: 記憶 (検索する、一覧を出す)
-        2: 理解 (要約する、説明する)
-        3: 応用 (テンプレートに沿って作る)
-        4: 分析 (構造を調べる、原因を探る)
-        5: 評価 (比較する、判断する)
-        6: 創造 (設計する、新しく作る)
-        * priority (1〜100の整数):
-        1が最低、100が最高。標準的な優先度は50とする。
-        * type (以下から選択):
-        research, review, analysis, planning, file_write, file_read, file_edit, file_move, file_delete, code_execution, web_search, communication, etc...
-
-        【出力フォーマット要件】
-        以下のYAML形式のリストのみを出力してください。例文に引っ張られないよう、goalとcommandには「今回の指示」に基づいた具体的な内容を記述すること。
-
-        ```yaml
-        - step_id: "step_1"
-          depends_on: []
-          bloom_level: <1〜6の整数>
-          priority: <1〜100の整数>
-          goal: "<指示書に設定されたタスク全体の最終目標>"
-          command: "<エージェントが実行すべき具体的なアクション>"
-          type: "<指定リストから選択>"
-          target_agent: "toneri_1"
-        - step_id: "step_2"
-          depends_on: ["step_1"]
-          bloom_level: <1〜6の整数>
-          # 以降、必要な手順の数だけ繰り返す
-        """
+        prompt = PROMPTS.TONOBEN_TASK_DECOMPOSITION.format(instruction=instruction)
         
         try:
             llm_response = self.llm(prompt) 
@@ -99,7 +64,7 @@ class TonobenAgent(BaseAgent):
             current_time = int(time.time())
             
             # 3. 分解されたタスクの登録とアサイン
-            for data in sub_tasks_data:
+            for index, data in enumerate(sub_tasks_data):
                 real_task_id = id_map.get(data.get("step_id"))
                 if not real_task_id:
                     continue
@@ -129,8 +94,10 @@ class TonobenAgent(BaseAgent):
                 # アサイン処理と通信
                 new_task.status = TaskStatus.ASSIGNED
                 new_task.timing.updated_at = int(time.time())
+                # tneri-1とtoneri-2に交互に割り当てる
+                target_agent = "toneri_1" if index % 2 == 0 else "toneri_2"
                 new_task.assigned = AssignedInfo(
-                    to=data.get("target_agent", "toneri_1"),
+                    to=data.get("target_agent", target_agent),
                     echo_message="頭弁より舎人へ、速やかなる実行を命ず。"
                 )
                 self.state_manager.update_task(new_task, event_type="TASK_ASSIGNED")

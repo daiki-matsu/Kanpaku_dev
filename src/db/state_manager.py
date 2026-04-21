@@ -134,3 +134,35 @@ class StateManager:
             receiver_id=message.receiver_id,
             msg_type=message.message_type
         ))
+
+    def try_acquire_lock(self, target: str, agent_id: str, ttl: int = 60) -> bool:
+        """
+        対象（ファイルパスやタスクID）の封鎖を試みる。
+        """
+        lock = Lock(
+            target_path=target,
+            locked_by=agent_id,
+            locked_at=time.time(),
+            expires_at=time.time() + ttl
+        )
+        
+        acquired = self.redis.acquire_lock(lock, ttl)
+        if acquired:
+            # 取得に成功した場合、絵巻（YAML）にも記録を残す
+            safe_path_id = target.replace("/", "_").strip("_")
+            self.yaml.save_history(entity_type="lock", entity_id=safe_path_id, data=lock.model_dump())
+            print(HeianMessages.LOCK_ACQUIRED.format(target=target, agent_id=agent_id))
+        else:
+            # 既に誰かが触っている場合
+            print(HeianMessages.LOCK_FAILED.format(target=target))
+            
+        return acquired
+
+    def release_lock(self, target: str, agent_id: str) -> None:
+        """
+        対象の封鎖を解く。自身が封じたものしか解呪できない掟とする。
+        """
+        current_lock = self.redis.get_lock(target)
+        if current_lock and current_lock.locked_by == agent_id:
+            self.redis.delete_lock(target)
+            print(HeianMessages.LOCK_RELEASED.format(target=target))

@@ -32,6 +32,7 @@ class ExecutionInfo(BaseModel):
     action: Optional[str] = None
     path: Optional[str] = None
     logs: Optional[str] = None
+    last_error: Optional[str] = None
 
 class ReviewInfo(BaseModel):
     status: Optional[str] = None

@@ -1,0 +1,296 @@
+- recorded_at: '2026-04-21T21:09:36.313767'
+  state:
+    answer:
+      details: null
+      status: null
+      summary: null
+    assigned:
+      echo_message: 頭弁より舎人へ、速やかなる実行を命ず。
+      to: toneri_1
+    execution:
+      action: null
+      last_error: null
+      logs: null
+      path: null
+      status: running
+    id: '1_1'
+    retry:
+      count: 0
+      max_limit: 5
+      reason: []
+    review:
+      feedback: null
+      score: null
+      status: null
+    setting:
+      bloom_level: 1
+      command: プロジェクト関連のファイルシステムやリポジトリを検索し、関連性の高いドキュメント（要件定義、設計概要、進捗レポートなど）を特定し、読み込む。
+      depends_on: []
+      goal: プロジェクトに関する初期ドキュメント、要件定義書、設計書など、基本構造を把握するための関連情報を収集する。
+      priority: 80
+      type: file_read
+    status: doing
+    timing:
+      created_at: 1776756950
+      updated_at: 1776773376
+- recorded_at: '2026-04-21T21:09:36.331686'
+  state:
+    answer:
+      details: null
+      status: null
+      summary: null
+    assigned:
+      echo_message: 頭弁より舎人へ、速やかなる実行を命ず。
+      to: toneri_1
+    execution:
+      action: null
+      last_error: '''task'''
+      logs: null
+      path: null
+      status: error
+    id: '1_1'
+    retry:
+      count: 1
+      max_limit: 5
+      reason:
+      - doing_failed
+    review:
+      feedback: null
+      score: null
+      status: null
+    setting:
+      bloom_level: 1
+      command: プロジェクト関連のファイルシステムやリポジトリを検索し、関連性の高いドキュメント（要件定義、設計概要、進捗レポートなど）を特定し、読み込む。
+      depends_on: []
+      goal: プロジェクトに関する初期ドキュメント、要件定義書、設計書など、基本構造を把握するための関連情報を収集する。
+      priority: 80
+      type: file_read
+    status: assigned
+    timing:
+      created_at: 1776756950
+      updated_at: 1776773376
+- recorded_at: '2026-04-21T21:09:36.454292'
+  state:
+    answer:
+      details: null
+      status: null
+      summary: null
+    assigned:
+      echo_message: 頭弁より舎人へ、速やかなる実行を命ず。
+      to: toneri_1
+    execution:
+      action: null
+      last_error: '''task'''
+      logs: null
+      path: null
+      status: running
+    id: '1_1'
+    retry:
+      count: 1
+      max_limit: 5
+      reason:
+      - doing_failed
+    review:
+      feedback: null
+      score: null
+      status: null
+    setting:
+      bloom_level: 1
+      command: プロジェクト関連のファイルシステムやリポジトリを検索し、関連性の高いドキュメント（要件定義、設計概要、進捗レポートなど）を特定し、読み込む。
+      depends_on: []
+      goal: プロジェクトに関する初期ドキュメント、要件定義書、設計書など、基本構造を把握するための関連情報を収集する。
+      priority: 80
+      type: file_read
+    status: doing
+    timing:
+      created_at: 1776756950
+      updated_at: 1776773376
+- recorded_at: '2026-04-21T21:09:36.477578'
+  state:
+    answer:
+      details: null
+      status: null
+      summary: null
+    assigned:
+      echo_message: 頭弁より舎人へ、速やかなる実行を命ず。
+      to: toneri_1
+    execution:
+      action: null
+      last_error: '''task'''
+      logs: null
+      path: null
+      status: error
+    id: '1_1'
+    retry:
+      count: 2
+      max_limit: 5
+      reason:
+      - doing_failed
+      - doing_failed
+    review:
+      feedback: null
+      score: null
+      status: null
+    setting:
+      bloom_level: 1
+      command: プロジェクト関連のファイルシステムやリポジトリを検索し、関連性の高いドキュメント（要件定義、設計概要、進捗レポートなど）を特定し、読み込む。
+      depends_on: []
+      goal: プロジェクトに関する初期ドキュメント、要件定義書、設計書など、基本構造を把握するための関連情報を収集する。
+      priority: 80
+      type: file_read
+    status: assigned
+    timing:
+      created_at: 1776756950
+      updated_at: 1776773376
+- recorded_at: '2026-04-21T21:09:36.665474'
+  state:
+    answer:
+      details: null
+      status: null
+      summary: null
+    assigned:
+      echo_message: 頭弁より舎人へ、速やかなる実行を命ず。
+      to: toneri_1
+    execution:
+      action: null
+      last_error: '''task'''
+      logs: null
+      path: null
+      status: running
+    id: '1_1'
+    retry:
+      count: 2
+      max_limit: 5
+      reason:
+      - doing_failed
+      - doing_failed
+    review:
+      feedback: null
+      score: null
+      status: null
+    setting:
+      bloom_level: 1
+      command: プロジェクト関連のファイルシステムやリポジトリを検索し、関連性の高いドキュメント（要件定義、設計概要、進捗レポートなど）を特定し、読み込む。
+      depends_on: []
+      goal: プロジェクトに関する初期ドキュメント、要件定義書、設計書など、基本構造を把握するための関連情報を収集する。
+      priority: 80
+      type: file_read
+    status: doing
+    timing:
+      created_at: 1776756950
+      updated_at: 1776773376
+- recorded_at: '2026-04-21T21:09:36.694536'
+  state:
+    answer:
+      details: null
+      status: null
+      summary: null
+    assigned:
+      echo_message: 頭弁より舎人へ、速やかなる実行を命ず。
+      to: toneri_1
+    execution:
+      action: null
+      last_error: '''task'''
+      logs: null
+      path: null
+      status: error
+    id: '1_1'
+    retry:
+      count: 3
+      max_limit: 5
+      reason:
+      - doing_failed
+      - doing_failed
+      - doing_failed
+    review:
+      feedback: null
+      score: null
+      status: null
+    setting:
+      bloom_level: 1
+      command: プロジェクト関連のファイルシステムやリポジトリを検索し、関連性の高いドキュメント（要件定義、設計概要、進捗レポートなど）を特定し、読み込む。
+      depends_on: []
+      goal: プロジェクトに関する初期ドキュメント、要件定義書、設計書など、基本構造を把握するための関連情報を収集する。
+      priority: 80
+      type: file_read
+    status: assigned
+    timing:
+      created_at: 1776756950
+      updated_at: 1776773376
+- recorded_at: '2026-04-21T21:09:36.941480'
+  state:
+    answer:
+      details: null
+      status: null
+      summary: null
+    assigned:
+      echo_message: 頭弁より舎人へ、速やかなる実行を命ず。
+      to: toneri_1
+    execution:
+      action: null
+      last_error: '''task'''
+      logs: null
+      path: null
+      status: running
+    id: '1_1'
+    retry:
+      count: 3
+      max_limit: 5
+      reason:
+      - doing_failed
+      - doing_failed
+      - doing_failed
+    review:
+      feedback: null
+      score: null
+      status: null
+    setting:
+      bloom_level: 1
+      command: プロジェクト関連のファイルシステムやリポジトリを検索し、関連性の高いドキュメント（要件定義、設計概要、進捗レポートなど）を特定し、読み込む。
+      depends_on: []
+      goal: プロジェクトに関する初期ドキュメント、要件定義書、設計書など、基本構造を把握するための関連情報を収集する。
+      priority: 80
+      type: file_read
+    status: doing
+    timing:
+      created_at: 1776756950
+      updated_at: 1776773376
+- recorded_at: '2026-04-21T21:09:36.981774'
+  state:
+    answer:
+      details: null
+      status: null
+      summary: null
+    assigned:
+      echo_message: 頭弁より舎人へ、速やかなる実行を命ず。
+      to: toneri_1
+    execution:
+      action: null
+      last_error: '''task'''
+      logs: null
+      path: null
+      status: error
+    id: '1_1'
+    retry:
+      count: 4
+      max_limit: 5
+      reason:
+      - doing_failed
+      - doing_failed
+      - doing_failed
+      - doing_failed
+    review:
+      feedback: null
+      score: null
+      status: null
+    setting:
+      bloom_level: 1
+      command: プロジェクト関連のファイルシステムやリポジトリを検索し、関連性の高いドキュメント（要件定義、設計概要、進捗レポートなど）を特定し、読み込む。
+      depends_on: []
+      goal: プロジェクトに関する初期ドキュメント、要件定義書、設計書など、基本構造を把握するための関連情報を収集する。
+      priority: 80
+      type: file_read
+    status: assigned
+    timing:
+      created_at: 1776756950
+      updated_at: 1776773376
