@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 ollama用のラッパー
-qwen3-coder:30bとgemma4:26b-a4bに対応
+qwen3.6とgemma4:26b-a4bに対応
 """
 
 import argparse
@@ -36,13 +36,13 @@ except ImportError:
 class ollamaWrapper:
     """ollamaモデルのラッパークラス"""
     
-    def __init__(self, model_name: str = "qwen3-coder:30b", 
+    def __init__(self, model_name: str = "qwen3.6", 
                  host: Optional[str] = None):
         """
         ollamaWrapperを初期化
         
         Args:
-            model_name: 使用するモデル名（デフォルト: qwen3-coder:30b）
+            model_name: 使用するモデル名（デフォルト: qwen3.6）
             host: ollamaサーバーのホスト（指定がない場合は.envファイルから取得）
         """
         self.model_name = model_name
@@ -190,12 +190,24 @@ class ollamaWrapper:
             self.logger.error(error_msg)
             raise RuntimeError(error_msg)
     
+    def generate(self, prompt: str) -> str:
+        """
+        Generate method for compatibility with existing code
+        
+        Args:
+            prompt: The prompt to send
+            
+        Returns:
+            The model response
+        """
+        return self.__call__(prompt)
+    
     def list_models(self) -> List[str]:
         """
-        利用可能なモデルを一覧表示
+        Utilizzare i modelli disponibili per l'elenco
         
         Returns:
-            モデル名のリスト
+            Elenco dei nomi dei modelli
         """
         return self._get_available_models()
 
@@ -204,8 +216,8 @@ def main():
     """コマンドラインインターフェース"""
     parser = argparse.ArgumentParser(description="ollamaモデル用ラッパー")
     parser.add_argument("prompt", nargs="?", help="送信するプロンプト（指定がない場合はstdinから読み込み）")
-    parser.add_argument("--model", default="qwen3-coder:30b",
-                       help="使用するモデル名（デフォルト: qwen3-coder:30b）")
+    parser.add_argument("--model", default="qwen3.6",
+                       help="使用するモデル名（デフォルト: qwen3.6）")
     parser.add_argument("--host", help="ollamaサーバーのホスト（指定がない場合は.envファイルから取得）")
     parser.add_argument("--list-models", action="store_true",
                        help="利用可能なモデルを一覧表示")

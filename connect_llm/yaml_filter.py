@@ -48,13 +48,18 @@ def filter_yaml_document(response: str, priority_keys: Optional[list] = None) ->
         フィルタリングされた単一YAMLドキュメント
     """
     if priority_keys is None:
-        priority_keys = ['wave_config', 'version', 'project']
+        priority_keys = ['step_id', 'wave_config', 'version', 'project']
     
     logger = logging.getLogger(__name__)
     
     try:
         # Clean YAML aliases first
         cleaned_response = clean_yaml_aliases(response)
+        
+        # Remove ```yaml and ``` markers (including the last one)
+        cleaned_response = re.sub(r'```yaml\s*', '', cleaned_response)
+        cleaned_response = re.sub(r'```\s*$', '', cleaned_response)  # End of line
+        cleaned_response = re.sub(r'```\s*', '', cleaned_response)   # Anywhere else
         
         # Split multiple documents
         documents = cleaned_response.split('---')

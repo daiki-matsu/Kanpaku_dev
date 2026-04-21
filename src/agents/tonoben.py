@@ -3,14 +3,20 @@ import uuid
 import time
 import sys
 import os
+import importlib
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from typing import List, Dict, Any
 from agents.base_agent import BaseAgent
 from models.message import Message
 from models.tasks import Task, TaskStatus, SettingInfo, AssignedInfo, TimingInfo
 
-# 献上された connect_llm 側のラッパーとYAMLフィルターを読み込む
-from connect_llm.ollama_wrapper import ollamaWrapper 
+# connect_llm  import with reload
+import connect_llm.ollama_wrapper
+importlib.reload(connect_llm.ollama_wrapper)
+from connect_llm.ollama_wrapper import ollamaWrapper
+
+# Force reload to ensure generate method is available
+importlib.reload(ollamaWrapper) 
 from connect_llm.yaml_filter import filter_yaml_document # ※yaml文字列を抽出・整形する関数
 
 class TonobenAgent(BaseAgent):
@@ -79,8 +85,8 @@ class TonobenAgent(BaseAgent):
         """
         
         try:
-            llm_response = self.llm.generate(prompt) 
-            yaml_str = filter_yaml_document(llm_response)
+            llm_response = self.llm(prompt) 
+            yaml_str = filter_yaml_document(llm_response, priority_keys=['step_id'])
             sub_tasks_data: List[Dict[str, Any]] = yaml.safe_load(yaml_str)
             
             print(f"【頭弁】思考完了。政務を {len(sub_tasks_data)} つのタスクに分解いたしました。")
