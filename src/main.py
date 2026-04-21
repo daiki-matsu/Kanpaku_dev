@@ -19,34 +19,35 @@ from db.redis_client import RedisClient
 from db.yaml_store import YamlStore
 from models.message import Message
 from models.agents import AgentStatus
+from utility.messages import HeianMessages
 
 def main():
     """Kanpakuシステムを起動"""
-    print("=== Kanpakuシステム起動 ===")
+    print(HeianMessages.SYSTEM_STARTUP)
     
     try:
         # Redis接続を確認
-        print("Redis接続を確認中...")
+        print(HeianMessages.REDIS_CHECK)
         redis_client = RedisClient(host='localhost', port=6379, db=0)
         
         # StateManagerを初期化
-        print("StateManagerを初期化中...")
+        print(HeianMessages.STATE_MANAGER_INIT)
         yaml_store = YamlStore(base_dir="history")
         state_manager = StateManager()
         state_manager.redis = redis_client
         state_manager.yaml = yaml_store
         
         # 頭弁エージェントを起動
-        print("頭弁エージェントを起動中...")
+        print(HeianMessages.TONOBEN_STARTUP)
         tonoben = TonobenAgent()
         tonoben.state_manager = state_manager
         
         # 頭弁の出仕宣言
-        print("頭弁の出仕宣言を行います...")
+        print(HeianMessages.TONOBEN_ATTENDANCE)
         tonoben._update_heartbeat()
         
         # サンプルエージェントを起動（テスト用）
-        print("サンプルエージェントを起動中...")
+        print(HeianMessages.SAMPLE_AGENT_STARTUP)
         sample_agents = []
         for i in range(1, 4):
             agent = BaseAgent(agent_id=f"toneri_{i}", role=f"殿人{i}", db=0)
@@ -54,7 +55,7 @@ def main():
             print(f"  - {agent.agent_id} ({agent.role}) を起動しました")
         
         # イベントループを開始
-        print("イベントループを開始します...")
+        print(HeianMessages.EVENT_LOOP_START)
         print("Ctrl+Cで停止できます")
         
         def event_loop():
@@ -72,7 +73,7 @@ def main():
                     time.sleep(5)  # 5秒間隔
                     
             except KeyboardInterrupt:
-                print("\nイベントループを停止します...")
+                print("\n" + HeianMessages.EVENT_LOOP_STOP)
         
         # イベントループを別スレッドで開始
         event_thread = threading.Thread(target=event_loop)
@@ -94,28 +95,20 @@ def main():
                     instruction = command[6:]  # "order " を除去
                     send_custom_order(tonoben, instruction)
                 else:
-                    print("不明なコマンドです。'help'でヘルプを表示します。")
+                    print(HeianMessages.UNKNOWN_COMMAND)
                     
         except KeyboardInterrupt:
             pass
         
-        print("Kanpakuシステムを停止します...")
+        print(HeianMessages.SYSTEM_STOP)
         
     except Exception as e:
-        print(f"システム起動エラー: {e}")
+        print(HeianMessages.SYSTEM_STARTUP_ERROR.format(error=e))
         sys.exit(1)
 
 def print_help():
     """ヘルプを表示"""
-    print("""
-利用可能なコマンド:
-  help              - このヘルプを表示
-  exit              - システムを停止
-  order             - サンプル注文を送信
-  order <指示>      - カスタム指示を送信
-例:
-  order システム仕様書を作成せよ
-    """)
+    print(HeianMessages.HELP_COMMANDS)
 
 def send_test_order(tonoben):
     """テスト用の注文を送信"""
@@ -126,12 +119,12 @@ def send_test_order(tonoben):
         content={"instruction": "プロジェクトの基本構造を分析し、報告書を作成せよ"}
     )
     
-    print(f"\n head  with order: {message.content['instruction']}")
+    print("\n" + HeianMessages.HEAD_WITH_ORDER.format(instruction=message.content['instruction']))
     try:
         tonoben.process_message(message)
-        print("Order processing completed")
+        print(HeianMessages.ORDER_PROCESSING_COMPLETE)
     except Exception as e:
-        print(f"Error during order processing: {e}")
+        print(HeianMessages.ORDER_PROCESSING_ERROR.format(error=e))
         import traceback
         traceback.print_exc()
 
@@ -144,9 +137,9 @@ def send_custom_order(tonoben, instruction):
         content={"instruction": instruction}
     )
     
-    print(f"\n頭弁にカスタム指示を送信: {instruction}")
+    print("\n" + HeianMessages.CUSTOM_ORDER_SENT.format(instruction=instruction))
     tonoben.process_message(message)
-    print("指示の処理が完了しました")
+    print(HeianMessages.ORDER_PROCESSING_DONE)
 
 if __name__ == "__main__":
     main()

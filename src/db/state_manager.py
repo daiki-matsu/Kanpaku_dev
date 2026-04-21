@@ -8,6 +8,7 @@ from models.state import SystemState
 from models.lock import FileLock
 from models.agents import Agent
 from models.message import Message
+from utility.messages import HeianMessages
 import time
 
 class StateManager:
@@ -41,7 +42,11 @@ class StateManager:
             if event_type != "TASK_CREATED" and current_task.status != task.status:
                 allowed_next_states = self.VALID_TRANSITIONS.get(current_task.status, [])
                 if task.status not in allowed_next_states:
-                    error_msg = f"【掟破り】政務 '{task.id}' にて許可されざる状態遷移（{current_task.status.value} → {task.status.value}）が試みられました。"
+                    error_msg = HeianMessages.STATE_VIOLATION.format(
+                        task_id=task.id,
+                        old_status=current_task.status.value,
+                        new_status=task.status.value
+                    )
                     print(error_msg)
                     # 不正な更新は朝廷を揺るがすため、例外を投げて書き込みをブロック
                     raise ValueError(error_msg)
@@ -53,11 +58,15 @@ class StateManager:
             ):
                 task.retry.count += 1
                 task.retry.reason.append("doing_failed")
-                print(f"【やり直し】政務 '{task.id}' が失敗いたしました。リトライ回数: {task.retry.count}/{task.retry.max_limit}")
+                print(HeianMessages.TASK_RETRY.format(
+                    task_id=task.id,
+                    count=task.retry.count,
+                    limit=task.retry.max_limit
+                ))
 
                 # リトライ上限超過の検分
                 if task.retry.count > task.retry.max_limit:
-                    print(f"【無念】政務 '{task.id}' は限界（リトライ上限）に達しました。FAILEDといたします。")
+                    print(HeianMessages.TASK_FAILED.format(task_id=task.id))
                     task.status = TaskStatus.FAILED
                     event_type = "TASK_FAILED"
                     # FAILED時は実行ステータスも強制的に書き換え
@@ -80,7 +89,10 @@ class StateManager:
         self.redis.add_event(event)
         self.yaml.save_history(entity_type="event", entity_id="stream_log", data=json.loads(event.model_dump_json()))
         
-        print(f"【詔勅更新】政務 '{task.id}' が '{task.status.value}' の状態となり申した。")
+        print(HeianMessages.TASK_UPDATED.format(
+            task_id=task.id,
+            status=task.status.value
+        ))
 
     def update_agent(self, agent: Agent, event_type: str = "AGENT_UPDATED") -> None:
         """官職の状態を更新"""
@@ -100,7 +112,9 @@ class StateManager:
         # 実際にはRedisのSETNX等でアトミックに取る必要がありますが、整合性記録層としての処理
         self.redis.save_lock(lock)
         self.yaml.save_history(entity_type="lock", entity_id=lock.target_path.replace("/", "_"), data=lock.model_dump())
-        print(f"【施錠】{lock.locked_by} が '{lock.target_path}' の専有を開始いたしました。")
+        print(HeianMessages.LOCK_ACQUIRED.format(
+            lock=lock
+        ))
         return True
 
     def send_message(self, message: Message) -> None:
@@ -115,4 +129,8 @@ class StateManager:
         channel = f"notify:{message.receiver_id}"
         self.redis.publish_notification(channel=channel, event_type=message.message_type)
         
-        print(f"【伝令】{message.sender_id} より {message.receiver_id} 宛に '{message.message_type}' の文が送られました。")
+        print(HeianMessages.MESSAGE_SENT.format(
+            sender_id=message.sender_id,
+            receiver_id=message.receiver_id,
+            msg_type=message.message_type
+        ))

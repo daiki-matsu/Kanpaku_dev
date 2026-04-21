@@ -1,11 +1,11 @@
 - !!python/object/apply:collections.OrderedDict
   - - - timestamp
-      - '2026-04-21T02:23:15.737368'
+      - '2026-04-21T15:46:25.731777'
     - - model
-      - qwen3.6
+      - gemma4:26b-a4b-q4k
     - - input
       - "\n        あなたはシステム開発プロジェクトを指揮する優秀なマネージャーです。\n        与えられた「指示」を分析し、自律AIエージェントが実行可能な粒度のサブタスクに分解してください。\n\
-        \n        指示: 明「明日の朝ごはんは何？」を英語、中国語、韓国語に訳して\n\n        【思考プロセス（必ずこの順序で思考すること）】\n\
+        \n        指示: プロジェクトの基本構造を分析し、報告書を作成せよ\n\n        【思考プロセス（必ずこの順序で思考すること）】\n\
         \        1. 指示の全体目標を正確に把握する。\n        2. 目標達成に必要な具体的な手順をステップ順に洗い出す。\n    \
         \    3. 各手順の依存関係（どのタスクが完了しないと次が始まらないか）を整理する。\n        4. 各手順に対し、以下の定義に従って適切な属性（bloom_level,\
         \ type, priority）を割り当てる。\n\n        【属性の定義】\n        * bloom_level (1〜6の整数):\n\
@@ -22,28 +22,32 @@
         \        - step_id: \"step_2\"\n          depends_on: [\"step_1\"]\n     \
         \     bloom_level: <1〜6の整数>\n          # 以降、必要な手順の数だけ繰り返す\n        "
     - - raw_output
-      - "```yaml\n- step_id: \"step_1\"\n  depends_on: []\n  bloom_level: 2\n  priority:\
-        \ 50\n  goal: \"「明日の朝ごはんは何？」を英語に翻訳する\"\n  command: \"指定された日本語テキストを文脈に合わせて自然な英語表現に変換し、出力する\"\
-        \n  type: planning\n  target_agent: \"toneri_1\"\n- step_id: \"step_2\"\n\
-        \  depends_on: [\"step_1\"]\n  bloom_level: 2\n  priority: 50\n  goal: \"\
-        「明日の朝ごはんは何？」を中国語に翻訳する\"\n  command: \"指定された日本語テキストを文脈に合わせて自然な中国語表現に変換し、出力する\"\
-        \n  type: planning\n  target_agent: \"toneri_1\"\n- step_id: \"step_3\"\n\
-        \  depends_on: [\"step_2\"]\n  bloom_level: 2\n  priority: 50\n  goal: \"\
-        「明日の朝ごはんは何？」を韓国語に翻訳する\"\n  command: \"指定された日本語テキストを文脈に合わせて自然な韓国語表現に変換し、出力する\"\
-        \n  type: planning\n  target_agent: \"toneri_1\"\n- step_id: \"step_4\"\n\
-        \  depends_on: [\"step_3\"]\n  bloom_level: 3\n  priority: 50\n  goal: \"\
-        3つの言語の翻訳結果を整合性のある形式でまとめて出力する\"\n  command: \"step_1からstep_3までの出力結果を取得し、言語ごとに区別された形式で最終回答を生成する\"\
-        \n  type: communication\n  target_agent: \"toneri_1\"\n```"
+      - "```yaml\n- step_id: \"step_1\"\n  depends_on: []\n  bloom_level: 1\n  priority:\
+        \ 90\n  goal: \"プロジェクトのディレクトリ構造およびファイル構成を把握する\"\n  command: \"プロジェクトのルートディレクトリから全サブディレクトリおよびファイルの一覧を取得し、階層構造をリストアップせよ\"\
+        \n  type: \"file_read\"\n  target_agent: \"toneri_1\"\n- step_id: \"step_2\"\
+        \n  depends_on: [\"step_1\"]\n  bloom_level: 4\n  priority: 70\n  goal: \"\
+        プロジェクトで使用されている技術スタックと依存関係を特定する\"\n  command: \"設定ファイル（package.json, requirements.txt,\
+        \ go.mod, pom.xml, Dockerfile等）を読み取り、使用言語、フレームワーク、主要なライブラリを抽出せよ\"\n  type:\
+        \ \"analysis\"\n  target_agent: \"toneri_1\"\n- step_id: \"step_3\"\n  depends_on:\
+        \ [\"step_2\"]\n  bloom_level: 4\n  priority: 60\n  goal: \"プロジェクトの設計アーキテクチャとモジュール間の関係性を分析する\"\
+        \n  command: \"コードのインポート構造やディレクトリの役割に基づき、設計パターン（MVC, Clean Architecture, Layered\
+        \ Architecture等）と主要コンポーネント間の依存関係を分析せよ\"\n  type: \"analysis\"\n  target_agent:\
+        \ \"toneri_1\"\n- step_id: \"step_4\"\n  depends_on: [\"step_3\"]\n  bloom_level:\
+        \ 6\n  priority: 50\n  goal: \"プロジェクトの基本構造に関する分析報告書を作成する\"\n  command: \"\
+        これまでの分析結果（ディレクトリ構造、技術スタック、アーキテクチャ、モジュール構成）を統合し、Markdown形式の構造分析報告書としてファイルに書き出せ\"\
+        \n  type: \"file_write\"\n  target_agent: \"toneri_1\"\n```"
     - - filtered_output
-      - "```yaml\n- step_id: \"step_1\"\n  depends_on: []\n  bloom_level: 2\n  priority:\
-        \ 50\n  goal: \"「明日の朝ごはんは何？」を英語に翻訳する\"\n  command: \"指定された日本語テキストを文脈に合わせて自然な英語表現に変換し、出力する\"\
-        \n  type: planning\n  target_agent: \"toneri_1\"\n- step_id: \"step_2\"\n\
-        \  depends_on: [\"step_1\"]\n  bloom_level: 2\n  priority: 50\n  goal: \"\
-        「明日の朝ごはんは何？」を中国語に翻訳する\"\n  command: \"指定された日本語テキストを文脈に合わせて自然な中国語表現に変換し、出力する\"\
-        \n  type: planning\n  target_agent: \"toneri_1\"\n- step_id: \"step_3\"\n\
-        \  depends_on: [\"step_2\"]\n  bloom_level: 2\n  priority: 50\n  goal: \"\
-        「明日の朝ごはんは何？」を韓国語に翻訳する\"\n  command: \"指定された日本語テキストを文脈に合わせて自然な韓国語表現に変換し、出力する\"\
-        \n  type: planning\n  target_agent: \"toneri_1\"\n- step_id: \"step_4\"\n\
-        \  depends_on: [\"step_3\"]\n  bloom_level: 3\n  priority: 50\n  goal: \"\
-        3つの言語の翻訳結果を整合性のある形式でまとめて出力する\"\n  command: \"step_1からstep_3までの出力結果を取得し、言語ごとに区別された形式で最終回答を生成する\"\
-        \n  type: communication\n  target_agent: \"toneri_1\"\n```"
+      - "```yaml\n- step_id: \"step_1\"\n  depends_on: []\n  bloom_level: 1\n  priority:\
+        \ 90\n  goal: \"プロジェクトのディレクトリ構造およびファイル構成を把握する\"\n  command: \"プロジェクトのルートディレクトリから全サブディレクトリおよびファイルの一覧を取得し、階層構造をリストアップせよ\"\
+        \n  type: \"file_read\"\n  target_agent: \"toneri_1\"\n- step_id: \"step_2\"\
+        \n  depends_on: [\"step_1\"]\n  bloom_level: 4\n  priority: 70\n  goal: \"\
+        プロジェクトで使用されている技術スタックと依存関係を特定する\"\n  command: \"設定ファイル（package.json, requirements.txt,\
+        \ go.mod, pom.xml, Dockerfile等）を読み取り、使用言語、フレームワーク、主要なライブラリを抽出せよ\"\n  type:\
+        \ \"analysis\"\n  target_agent: \"toneri_1\"\n- step_id: \"step_3\"\n  depends_on:\
+        \ [\"step_2\"]\n  bloom_level: 4\n  priority: 60\n  goal: \"プロジェクトの設計アーキテクチャとモジュール間の関係性を分析する\"\
+        \n  command: \"コードのインポート構造やディレクトリの役割に基づき、設計パターン（MVC, Clean Architecture, Layered\
+        \ Architecture等）と主要コンポーネント間の依存関係を分析せよ\"\n  type: \"analysis\"\n  target_agent:\
+        \ \"toneri_1\"\n- step_id: \"step_4\"\n  depends_on: [\"step_3\"]\n  bloom_level:\
+        \ 6\n  priority: 50\n  goal: \"プロジェクトの基本構造に関する分析報告書を作成する\"\n  command: \"\
+        これまでの分析結果（ディレクトリ構造、技術スタック、アーキテクチャ、モジュール構成）を統合し、Markdown形式の構造分析報告書としてファイルに書き出せ\"\
+        \n  type: \"file_write\"\n  target_agent: \"toneri_1\"\n```"

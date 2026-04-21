@@ -4,6 +4,7 @@ from models.agents import Agent, AgentStatus
 from models.message import Message
 from db.state_manager import StateManager
 from db.redis_client import RedisClient  # Added import statement
+from utility.messages import HeianMessages
 
 class BaseAgent:
     """朝廷に仕える全官職（エージェント）の礎となる振る舞い"""
@@ -32,7 +33,10 @@ class BaseAgent:
 
     def wait_for_orders(self) -> None:
         """政務が下るのを待つ、無限の待機ループ"""
-        print(f"【出仕】{self.role} '{self.agent_id}' が朝廷に出仕し、待機を開始いたしました。")
+        print(HeianMessages.AGENT_ATTENDANCE.format(
+            role=self.role,
+            agent_id=self.agent_id
+        ))
         
         try:
             while True:
@@ -49,18 +53,25 @@ class BaseAgent:
                     
                     if notification and notification['type'] == 'message':
                         event_type = notification['data']
-                        print(f"【狼煙検知】{self.agent_id}: '{event_type}' の狼煙を確認。文箱を改めまする。")
+                        print(HeianMessages.AGENT_WAKEUP.format(
+                            agent_id=self.agent_id,
+                            event_type=event_type
+                        ))
                         # 次のループですぐに pop_inbox が呼ばれ、文を取り出します
                 
                 # 3. 生存報告（ハートビート）の更新
                 self._update_heartbeat()
 
         except KeyboardInterrupt:
-            print(f"【退朝】{self.agent_id} はお役目を終え、退出いたします。")
+            print(HeianMessages.AGENT_RETIRE.format(agent_id=self.agent_id))
 
     def _handle_message(self, message: Message) -> None:
         """文を受け取った際の共通の振る舞い"""
-        print(f"【受領】{self.agent_id}: '{message.sender_id}' より '{message.message_type}' の文を受け取りました。")
+        print(HeianMessages.AGENT_RECEIVED.format(
+            agent_id=self.agent_id,
+            sender_id=message.sender_id,
+            msg_type=message.message_type
+        ))
         self._change_status(AgentStatus.WORKING)
         
         try:
@@ -71,7 +82,10 @@ class BaseAgent:
             self.process_message(message)
             
         except Exception as e:
-            print(f"【異常事態】{self.agent_id}: 政務中に不測の事態が発生いたしました。({e})")
+            print(HeianMessages.AGENT_ERROR.format(
+                agent_id=self.agent_id,
+                error=e
+            ))
             self._change_status(AgentStatus.ERROR)
             # エラーからの復帰ロジック（Sprint 5以降）までは、ひとまずログのみ残す
         finally:
@@ -88,7 +102,10 @@ class BaseAgent:
         if self.me.status != new_status:
             self.me.status = new_status
             self.redis.save_agent(self.me)
-            print(f"【状態変化】{self.agent_id} が '{new_status.value}' となり申した。")
+            print(HeianMessages.AGENT_STATUS_CHANGE.format(
+                agent_id=self.agent_id,
+                status=new_status.value
+            ))
 
     def _update_heartbeat(self) -> None:
         """生存していることを蔵へ知らせる"""

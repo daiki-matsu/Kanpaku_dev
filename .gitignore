@@ -22,7 +22,6 @@ venv_linux/
 .legacy/
 enter/
 setup_env/
-utility/
 research/
 .gitignore
 .windsurf

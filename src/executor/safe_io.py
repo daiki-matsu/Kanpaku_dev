@@ -1,5 +1,6 @@
 import os
 from typing import Dict, Any
+from utility.messages import HeianMessages
 
 class SafeIO:
     """
@@ -53,7 +54,7 @@ class SafeIO:
                 "status": "error",
                 "action": "read",
                 "path": file_path,
-                "logs": "不敬なる越権行為（許可されていない領域へのアクセス）を検知いたしました。"
+                "logs": HeianMessages.IO_VIOLATION
             }
         
         abs_path = os.path.abspath(os.path.join(self.base_dir, file_path))
@@ -62,7 +63,7 @@ class SafeIO:
                 "status": "error",
                 "action": "read",
                 "path": file_path,
-                "logs": "ご指定の巻物（ファイル）が見つかりませぬ。"
+                "logs": HeianMessages.IO_NOT_FOUND
             }
         
         try:
@@ -72,7 +73,7 @@ class SafeIO:
                 "status": "success",
                 "action": "read",
                 "path": file_path,
-                "logs": "読み込みに成功いたしました。",
+                "logs": HeianMessages.IO_READ_SUCCESS,
                 "content": content
             }
         except Exception as e:
@@ -80,7 +81,7 @@ class SafeIO:
                 "status": "error",
                 "action": "read",
                 "path": file_path,
-                "logs": f"読み込み中に不測の事態が発生: {str(e)}"
+                "logs": HeianMessages.IO_READ_ERROR.format(error=str(e))
             }
 
     def safe_write(self, file_path: str, content: str) -> Dict[str, Any]:
@@ -90,7 +91,7 @@ class SafeIO:
                 "status": "error",
                 "action": "write",
                 "path": file_path,
-                "logs": "不敬なる越権行為（許可されていない領域へのアクセス）を検知いたしました。"
+                "logs": HeianMessages.IO_VIOLATION
             }
         
         abs_path = os.path.abspath(os.path.join(self.base_dir, file_path))
@@ -105,12 +106,12 @@ class SafeIO:
                 "status": "success", 
                 "action": "write",
                 "path": file_path,
-                "logs": "書き込みに成功いたしました。"
+                "logs": HeianMessages.IO_WRITE_SUCCESS
             }
         except Exception as e:
             return {
                 "status": "error", 
                 "action": "write",
                 "path": file_path,
-                "logs": f"書き込み中に不測の事態が発生: {str(e)}"
+                "logs": HeianMessages.IO_WRITE_ERROR.format(error=str(e))
             }

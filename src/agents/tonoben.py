@@ -9,14 +9,11 @@ from typing import List, Dict, Any
 from agents.base_agent import BaseAgent
 from models.message import Message
 from models.tasks import Task, TaskStatus, SettingInfo, AssignedInfo, TimingInfo
+from utility.messages import HeianMessages
 
 # connect_llm  import with reload
 import connect_llm.ollama_wrapper
-importlib.reload(connect_llm.ollama_wrapper)
-from connect_llm.ollama_wrapper import ollamaWrapper
-
-# Force reload to ensure generate method is available
-importlib.reload(ollamaWrapper) 
+from connect_llm.ollama_wrapper import ollamaWrapper 
 from connect_llm.yaml_filter import filter_yaml_document # ※yaml文字列を抽出・整形する関数
 
 class TonobenAgent(BaseAgent):
@@ -27,18 +24,18 @@ class TonobenAgent(BaseAgent):
 
     def __init__(self):
         super().__init__(agent_id="tonoben", role="頭弁")
-        self.llm = ollamaWrapper()
+        self.llm = ollamaWrapper(model_name="gemma4:26b-a4b-q4k")
 
     def process_message(self, message: Message) -> None:
         if message.message_type == "ORDER_RECEIVED":
             self._decompose_and_assign(message)
         else:
-            print(f"【頭弁】承知できぬ用件ゆえ、静観いたしまする。({message.message_type})")
+            print(HeianMessages.TONOBEN_IGNORE.format(msg_type=message.message_type))
 
 
     def _decompose_and_assign(self, message: Message) -> None:
         instruction = message.content.get("instruction", "")
-        print(f"【頭弁】関白殿下より詔勅を賜りました。「{instruction}」...これより政務を分解いたしまする。")
+        print(HeianMessages.TONOBEN_ORDER_RECEIVED.format(instruction=instruction))
 
         # 1. 高精度化されたタスク分解プロンプト（Chain of Thought 導入）
         prompt = f"""
@@ -89,7 +86,7 @@ class TonobenAgent(BaseAgent):
             yaml_str = filter_yaml_document(llm_response, priority_keys=['step_id'])
             sub_tasks_data: List[Dict[str, Any]] = yaml.safe_load(yaml_str)
             
-            print(f"【頭弁】思考完了。政務を {len(sub_tasks_data)} つのタスクに分解いたしました。")
+            print(HeianMessages.TONOBEN_DECOMPOSED.format(count=len(sub_tasks_data)))
 
             # 2. タスクIDの採番と依存関係の解決
             # 実行回数の連番 (X) _ その分割内の連番 (Y) を生成
@@ -147,9 +144,9 @@ class TonobenAgent(BaseAgent):
                 )
                 self.state_manager.send_message(assign_msg)
                 
-            print(f"【頭弁】すべての舎人への割り振りが完了いたしました。（実行ID: {self.execution_count}）")
+            print(HeianMessages.TONOBEN_ASSIGN_COMPLETE.format(execution_id=self.execution_count))
             self.execution_count += 1 # 次回の分解に備えてカウントアップ
 
         except Exception as e:
-            print(f"【頭弁エラー】政務の分解中に不測の事態が発生いたしました。: {e}")
+            print(HeianMessages.TONOBEN_ERROR.format(error=e))
             raise e
