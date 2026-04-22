@@ -5,6 +5,7 @@ from models.message import Message
 from db.state_manager import StateManager
 from db.redis_client import RedisClient  # Added import statement
 from utility.messages import HeianMessages
+from src.infrastructure.llm_server_manager import GlobalServerManager
 
 class BaseAgent:
     """朝廷に仕える全官職（エージェント）の礎となる振る舞い"""
@@ -30,6 +31,9 @@ class BaseAgent:
         self.pubsub = self.redis.get_pubsub()
         self.channel = f"notify:{self.agent_id}"
         self.pubsub.subscribe(self.channel)
+        
+        # llama.cppサーバーの起動（管理対象の場合）
+        self._start_llm_server()
 
     def wait_for_orders(self) -> None:
         """政務が下るのを待つ、無限の待機ループ"""
@@ -111,3 +115,43 @@ class BaseAgent:
         """生存していることを蔵へ知らせる"""
         self.me.last_heartbeat = time.time()
         self.redis.save_agent(self.me)
+    
+    def _start_llm_server(self) -> None:
+        """このエージェント用のllama.cppサーバーを起動"""
+        try:
+            # エージェントごとのモデル名を取得
+            model_name = self._get_model_name()
+            
+            # サーバーを起動
+            success = GlobalServerManager.start_server(self.agent_id, model_name)
+            if success:
+                print(f" {self.agent_id}用のllama.cppサーバーを起動しました")
+            else:
+                print(f" {self.agent_id}用のllama.cppサーバーの起動に失敗しました")
+        except Exception as e:
+            print(f" {self.agent_id}用のサーバー起動エラー: {e}")
+    
+    def _stop_llm_server(self) -> None:
+        """このエージェント用のllama.cppサーバーを停止"""
+        try:
+            GlobalServerManager.stop_server(self.agent_id)
+            print(f" {self.agent_id}用のllama.cppサーバーを停止しました")
+        except Exception as e:
+            print(f" {self.agent_id}用のサーバー停止エラー: {e}")
+    
+    def _get_model_name(self) -> str:
+        """エージェントごとのモデル名を取得"""
+        model_mapping = {
+            'kanpaku': 'gemma4_e2b',
+            'tonoben': 'deepseek_coder_6_7b',
+            'toneri_1': 'gemma4_e2b',
+            'toneri_2': 'gemma4_e2b'
+        }
+        return model_mapping.get(self.agent_id, 'gemma4_e2b')
+    
+    def __del__(self):
+        """デストラクタでサーバーを停止"""
+        try:
+            self._stop_llm_server()
+        except:
+            pass

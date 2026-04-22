@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_id": {
+            "type": "string",
+            "pattern": "^step_[0-9]+$",
+            "description": "Step identifier in format step_X"
+          },
+          "goal": {
+            "type": "string",
+            "description": "Goal of this step"
+          },
+          "command": {
+            "type": "string",
+            "description": "Specific command to execute"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["file_creation", "file_modification", "analysis", "validation", "general"],
+            "description": "Type of task"
+          },
+          "bloom_level": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6,
+            "description": "Bloom's taxonomy level (1-6)"
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Priority level (1-100)"
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^step_[0-9]+$"
+            },
+            "description": "List of step dependencies"
+          },
+          "target_agent": {
+            "type": "string",
+            "enum": ["toneri_1", "toneri_2"],
+            "description": "Target agent for execution"
+          }
+        },
+        "required": ["step_id", "goal", "command", "type"],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "description": "Array of decomposed tasks"
+    }
+  },
+  "required": ["tasks"],
+  "additionalProperties": false
+}

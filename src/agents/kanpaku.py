@@ -1,7 +1,14 @@
 from agents.base_agent import BaseAgent
 from models.message import Message
-from connect_llm.ollama_wrapper import ollamaWrapper
-from connect_llm.env_loader import get_env_var
+from agents.llm_client import LLMClient
+from src.infrastructure.llm_server_manager import GlobalServerManager
+
+# Environment variable loader
+def get_env_var(var_name: str) -> str:
+    """Get environment variable value"""
+    import os
+    return os.getenv(var_name, "")
+
 from utility.messages import HeianMessages
 from utility.prompts import SystemPrompts
 
@@ -12,9 +19,11 @@ class KanpakuAgent(BaseAgent):
     """帝の御心を汲み取り、朝廷全体を導く最高権力者（関白）"""
     
     def __init__(self):
-        super().__init__(agent_id="kanpaku", role="関白")
-        host = get_env_var("OLLAMA_HOST_1", None)
-        self.llm = ollamaWrapper(model_name="gemma4:e2b", host=host)
+        super().__init__(agent_id="kanpaku", role="function")
+        # サーバーマネージャーからサーバーURLを取得
+        server_manager = GlobalServerManager.get_server("kanpaku", "gemma4_e2b")
+        server_url = server_manager.get_server_url()
+        self.llm = LLMClient(agent_id="kanpaku", model_name="gemma4_e2b", server_url=server_url)
 
     def process_message(self, message: Message) -> None:
         """受け取った文（用件）に応じた政務を行う"""

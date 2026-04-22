@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File path relative to project root"
+          },
+          "operation": {
+            "type": "string",
+            "enum": ["create", "modify", "delete"],
+            "description": "Type of file operation"
+          },
+          "content": {
+            "type": "string",
+            "description": "File content (for create/modify operations)"
+          },
+          "encoding": {
+            "type": "string",
+            "enum": ["utf-8", "binary"],
+            "default": "utf-8",
+            "description": "File encoding"
+          },
+          "backup": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether to create backup before modification"
+          }
+        },
+        "required": ["path", "operation"],
+        "additionalProperties": false,
+        "if": {
+          "properties": {
+            "operation": {
+              "const": "delete"
+            }
+          }
+        },
+        "then": {
+          "not": {
+            "required": ["content"]
+          }
+        },
+        "else": {
+          "required": ["content"]
+        }
+      },
+      "minItems": 1,
+      "description": "Array of file operations"
+    }
+  },
+  "required": ["operations"],
+  "additionalProperties": false
+}

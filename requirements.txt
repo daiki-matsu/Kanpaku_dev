@@ -30,3 +30,6 @@ redis>=5.0.0
 
 # PyYAML
 pyyaml>=6.0.0
+
+# OpenAI
+openai>=2.32.0

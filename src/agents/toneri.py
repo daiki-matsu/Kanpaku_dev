@@ -5,9 +5,47 @@ from agents.base_agent import BaseAgent
 from models.message import Message
 from models.tasks import TaskStatus
 from executor.safe_io import SafeIO
-from connect_llm.ollama_wrapper import ollamaWrapper
-from connect_llm.yaml_filter import extract_yaml_blocks
-from connect_llm.env_loader import get_env_var
+from agents.llm_client import LLMClient
+from src.infrastructure.llm_server_manager import GlobalServerManager
+
+# JSON to YAML conversion utility
+def extract_yaml_blocks(text: str) -> str:
+    """Extract YAML blocks from text and convert to proper YAML format"""
+    import yaml
+    import json
+    
+    # Try to parse as JSON first (for structured outputs)
+    try:
+        # Look for JSON blocks
+        if '{' in text and '}' in text:
+            # Extract JSON content
+            start = text.find('{')
+            end = text.rfind('}') + 1
+            json_content = text[start:end]
+            
+            # Parse JSON and convert to YAML
+            data = json.loads(json_content)
+            return yaml.dump(data, default_flow_style=False, allow_unicode=True)
+    except:
+        pass
+    
+    # Fallback to original YAML extraction
+    lines = text.split('\n')
+    yaml_lines = []
+    in_yaml_block = False
+    
+    for line in lines:
+        if line.strip().startswith('```yaml'):
+            in_yaml_block = True
+            continue
+        elif line.strip() == '```' and in_yaml_block:
+            in_yaml_block = False
+            continue
+        elif in_yaml_block or line.strip().startswith('-') or ':' in line:
+            yaml_lines.append(line)
+    
+    return '\n'.join(yaml_lines)
+
 from utility.messages import HeianMessages
 from utility.prompts import SystemPrompts
 
@@ -19,9 +57,11 @@ class ToneriAgent(BaseAgent):
     
     def __init__(self, agent_id: str = "toneri_1"):
         # 引数で agent_id を受け取ることで、toneri_2 等も簡単に生成可能に
-        super().__init__(agent_id=agent_id, role="舎人")
-        host = get_env_var("OLLAMA_HOST_3", None)
-        self.llm = ollamaWrapper(model_name="gemma4:e2b", host=host)
+        super().__init__(agent_id=agent_id, role="")
+        # サーバーマネージャーからサーバーURLを取得
+        server_manager = GlobalServerManager.get_server(agent_id, "gemma4_e2b")
+        server_url = server_manager.get_server_url()
+        self.llm = LLMClient(agent_id=agent_id, model_name="gemma4_e2b", server_url=server_url)
         self.safe_io = SafeIO(base_project_dir="temp_project")
 
     def process_message(self, message: Message) -> None:

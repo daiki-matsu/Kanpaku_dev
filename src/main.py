@@ -7,6 +7,8 @@ import sys
 import os
 import time
 import threading
+import atexit
+import signal
 
 # プロジェクトルートディレクトリをパスに追加
 project_root = os.path.dirname(os.path.dirname(__file__))
@@ -19,9 +21,27 @@ from agents.toneri import ToneriAgent
 from db.state_manager import StateManager
 from models.message import Message
 from utility.messages import HeianMessages
+from src.infrastructure.llm_server_manager import GlobalServerManager
+
+def cleanup_on_exit():
+    """システム終了時のクリーンアップ処理"""
+    print("\n🛑 全llama.cppサーバーを停止します...")
+    GlobalServerManager.stop_all_servers()
+    print("✅ クリーンアップ完了")
+
+def signal_handler(signum, frame):
+    """シグナルハンドラ"""
+    print(f"\nシグナル {signum} を受信しました")
+    cleanup_on_exit()
+    sys.exit(0)
 
 def main():
     """Kanpakuシステムを起動し、朝廷の全官職を出仕させる"""
+    # 終了時処理の登録
+    atexit.register(cleanup_on_exit)
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    
     print(HeianMessages.SYSTEM_STARTUP)
     
     try:
@@ -29,6 +49,7 @@ def main():
         
         # 1. 官職（エージェント）たちの任命と出仕準備
         # それぞれが独立した思考を持つAIとして初期化されます
+        print("🏛️  朝廷の官職（エージェント）を任命します...")
         kanpaku = KanpakuAgent()
         tonoben = TonobenAgent()
         toneri_1 = ToneriAgent(agent_id="toneri_1")
@@ -65,13 +86,16 @@ def main():
                 time.sleep(1)
                     
         except KeyboardInterrupt:
-            pass
+            print("\n👋 帝より退朝の命が下りました")
         
         print(HeianMessages.SYSTEM_SHUTDOWN)
         
     except Exception as e:
         print(HeianMessages.KANPAKU_STARTUP_ERROR.format(e=e))
         sys.exit(1)
+    finally:
+        # 確実にクリーンアップ
+        cleanup_on_exit()
 
 def send_mikado_order(state_manager: StateManager, instruction: str):
     """帝（ユーザー）からの大号令を関白へ下賜する"""

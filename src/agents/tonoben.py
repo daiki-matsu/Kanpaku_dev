@@ -15,11 +15,48 @@ from utility.prompts import SystemPrompts
 # グローバル変数としてPROMPTSを設定
 PROMPTS = SystemPrompts()
 
-# connect_llm  import with reload
-import connect_llm.ollama_wrapper
-from connect_llm.ollama_wrapper import ollamaWrapper 
-from connect_llm.yaml_filter import filter_yaml_document # ※yaml文字列を抽出・整形する関数
-from connect_llm.env_loader import get_env_var
+# YAML filter utility
+def filter_yaml_document(text: str, priority_keys: list = None) -> str:
+    """Filter and extract YAML document from text"""
+    import yaml
+    import json
+    
+    # Try to parse as JSON first (for structured outputs)
+    try:
+        if '{' in text and '}' in text:
+            start = text.find('{')
+            end = text.rfind('}') + 1
+            json_content = text[start:end]
+            data = json.loads(json_content)
+            return yaml.dump(data, default_flow_style=False, allow_unicode=True)
+    except:
+        pass
+    
+    # Fallback to YAML extraction
+    lines = text.split('\n')
+    yaml_lines = []
+    in_yaml_block = False
+    
+    for line in lines:
+        if line.strip().startswith('```yaml'):
+            in_yaml_block = True
+            continue
+        elif line.strip() == '```' and in_yaml_block:
+            in_yaml_block = False
+            continue
+        elif in_yaml_block or line.strip().startswith('-') or ':' in line:
+            yaml_lines.append(line)
+    
+    return '\n'.join(yaml_lines)
+
+# Environment variable loader
+def get_env_var(var_name: str) -> str:
+    """Get environment variable value"""
+    import os
+    return os.getenv(var_name, "")
+
+from agents.llm_client import LLMClient
+from src.infrastructure.llm_server_manager import GlobalServerManager
 
 class TonobenAgent(BaseAgent):
     """朝廷の実務を取り仕切る"""
@@ -28,9 +65,11 @@ class TonobenAgent(BaseAgent):
     execution_count = 1 
 
     def __init__(self):
-        super().__init__(agent_id="tonoben", role="頭弁")
-        host = get_env_var("OLLAMA_HOST_2", None)
-        self.llm = ollamaWrapper(model_name="gemma4:e2b", host=host)
+        super().__init__(agent_id="tonoben", role="function")
+        # サーバーマネージャーからサーバーURLを取得
+        server_manager = GlobalServerManager.get_server("tonoben", "deepseek_coder_6_7b")
+        server_url = server_manager.get_server_url()
+        self.llm = LLMClient(agent_id="tonoben", model_name="deepseek_coder_6_7b", server_url=server_url)
 
     def process_message(self, message: Message) -> None:
         if message.message_type == "ORDER_RECEIVED":
